@@ -3,17 +3,19 @@ import networkx as nx
 
 def draw_G(
     G, 
+    ax=None,
     figsize=(6, 6), 
     title='',
     node_fontsize=10, 
     edge_fontsize=10, 
     node_size=400,
+    dpi=300,
     show_node_value=True, 
     show_edge_value=True,
     object_node_color='skyblue', 
     attribute_node_color='pink',
     relation_edge_color='black', 
-    attribute_edge_color='gray',
+    attribute_edge_color='lightgray',
     layout='spring'
 ):
     """
@@ -40,8 +42,9 @@ def draw_G(
     :return: matplotlib.figure.Figure 对象
     """
     # 根据参数选择布局
+    plt.close('all')
     if layout == 'spring':
-        pos = nx.spring_layout(G, seed=42, k=0.8)
+        pos = nx.spring_layout(G, seed=42, k=3)
     elif layout == 'circular':
         pos = nx.circular_layout(G)
     elif layout == 'kamada_kawai':
@@ -51,8 +54,11 @@ def draw_G(
     else:
         pos = nx.spring_layout(G, seed=42, k=0.8)
     
-    fig, ax = plt.subplots(figsize=figsize)
-
+    returnfig = False
+    if ax is None:
+        returnfig = True
+        fig, ax = plt.subplots(figsize=figsize, dpi=dpi)
+    
     # 分别提取不同类型的边
     relation_edges = [(u, v) for u, v, data in G.edges(data=True) if data.get("type") == "relation_edge"]
     attribute_edges = [(u, v) for u, v, data in G.edges(data=True) if data.get("type") == "attribute_edge"]
@@ -68,7 +74,8 @@ def draw_G(
         width=2,
         edge_color=relation_edge_color,
         min_source_margin=15,
-        min_target_margin=15
+        min_target_margin=15,
+        connectionstyle='arc3, rad=.1'
     )
 
     # 绘制属性边(attribute->object), 采用指定颜色
@@ -140,10 +147,41 @@ def draw_G(
             label_pos=0.5,
             bbox=dict(facecolor='white', edgecolor='none', pad=0.5)
         )
+        
+    x_vals, y_vals = zip(*pos.values())
+    x_min, x_max = min(x_vals), max(x_vals)
+    y_min, y_max = min(y_vals), max(y_vals)
+    x_padding = (x_max - x_min) * 0.2
+    y_padding = (y_max - y_min) * 0.2
+    ax.set_xlim(x_min - x_padding, x_max + x_padding)
+    ax.set_ylim(y_min - y_padding, y_max + y_padding)
 
     ax.set_title(title, fontsize=16)
-    ax.axis('off')
     plt.tight_layout()
-    plt.close(fig)
     
+    if returnfig:
+        return fig
+    
+def plot_vng_sg(Gs):
+    plt.close('all')
+    vng_map = {
+        'E': 'Establisher',
+        'I': 'Initial',
+        'Pr': 'Prolongation',
+        'P': 'Peak'
+    }
+    fig_width = 4*len(Gs)
+    fig_height = 4
+    fig_size = (fig_width, fig_height)
+    fig, axs = plt.subplots(1, len(Gs), figsize=(fig_size), dpi=300)
+
+    for i, (vng, G) in enumerate(Gs.items()):
+        draw_G(G, ax=axs[i], title=vng_map[vng], node_fontsize=8, edge_fontsize=8)
+        axs[i].spines['top'].set_visible(False)
+        axs[i].spines['bottom'].set_visible(False)
+        axs[i].spines['left'].set_visible(False)
+        if i == len(Gs) - 1: 
+            axs[i].spines['right'].set_visible(False)
+
+    plt.tight_layout()
     return fig

@@ -7,3 +7,7 @@ from .utils import (
 from .viz import (
     draw_G,
 )
+
+from .datasets import DataManager
+
+from .prompts import PromptTemplateManager

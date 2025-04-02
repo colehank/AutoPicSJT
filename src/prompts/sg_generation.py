@@ -21,6 +21,7 @@ You will be given a narrative.
 - The relations should be unique and not repeated.
 - The graph only have 2 types of nodes: object_node and attribute_node.
 - The graph only have 2 types of edges: relation_edge and attribute_edge.
+- The node and edge content should be clear and short. 
 
 
 ## OUTPUT

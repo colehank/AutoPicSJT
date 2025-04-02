@@ -3,6 +3,7 @@ from .ner import prompt_template as ner_prompt_template
 from .triple_extraction import prompt_template as triple_extraction_prompt_template
 from .vng_generation import prompt_template as vng_generation_prompt_template
 from .sg_generation import prompt_template as sg_generation_prompt_template
+from .diamonds import prompt_template as diamonds_prompt_template
 import json
 from copy import deepcopy
 from string import Template
@@ -23,7 +24,8 @@ class PromptTemplateManager:
             "sg_generation": {
                 "template": sg_generation_prompt_template, 
                 "required_params": ["passage"]
-            }
+            },
+            'diamonds': {"template": diamonds_prompt_template, "required_params": ["passage", "word"]},
         }
     
     def get_templete(self, task_name: str) -> Optional[List[Dict[str, str]]]:
@@ -60,6 +62,8 @@ class PromptTemplateManager:
         # Process named_entities if provided but as a list
         if "named_entities" in params and isinstance(params["named_entities"], list):
             params["named_entities"] = json.dumps(params["named_entities"], ensure_ascii=False)
+        if "word" in params and isinstance(params["word"], list):
+            params["word"] = json.dumps(params["word"], ensure_ascii=False)
             
         return self._process(template_info["template"], **params)
 

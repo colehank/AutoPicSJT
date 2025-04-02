@@ -1,3 +1,5 @@
+from string import Template
+
 ner_system = """Your task is to extract named entities from the given paragraph and perform coreference resolution. 
 Identify all named entities such as people, organizations, locations, dates, and other relevant entities. 
 Note that pronouns like "you" must also be identified as named entities. 

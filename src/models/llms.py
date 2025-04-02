@@ -4,9 +4,10 @@ from ..utils.llm_utils import print_conversation
 import pandas as pd
 
 class TempletLLM():
-    def __init__(self, task = None, **kwargs):
+    def __init__(self, task = None, json = True, **kwargs):
         self.prompt_manager = PromptTemplateManager()
         self.llm = BaseLLM()
+        self.json = json
         self.task = task
         self.tasks = list(self.prompt_manager._templates.keys())
         
@@ -20,8 +21,8 @@ class TempletLLM():
         self.template = self.prompt_manager.get_templete(task)
     
     def call(self, passage, **kwargs):
-        self.prompt = self.prompt_manager.make_prompt(self.task, passage, **kwargs)
-        return self.llm.call(self.prompt, **kwargs)
+        self.prompt = self.prompt_manager.make_prompt(self.task, passage, json = self.json, **kwargs)
+        return self.llm.call(self.prompt)
     
     def print(self, task = None):
         task = task or self.task
