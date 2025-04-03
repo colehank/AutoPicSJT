@@ -1,7 +1,6 @@
-# %%
 from string import Template
 from ..datasets import DataManager
-# %%
+
 diamonds = DataManager().read('situation_DIAMONDS', 'DIAMONDS')
 
 _dim_system = """
@@ -17,30 +16,30 @@ D(Duty), I(Intellect), A(Adversity), M(Mating), O(pOsitivity), N(Negativity), Dc
 Each dimension consists of 3 of statements that describe the situation.
 
 ## DIAMONDS test
-D_1: I must complete a task.
-D_2: I need to have a task-oriented mindset.
-D_3: I must fulfill my (own) responsibilities.
-I_1: This situation contains intellectual stimulation.
-I_2: This situation provides the opportunity to showcase intellectual ability.
-I_3: Information must be processed with deep thought.
-A_1: I will be criticized.
-A_2: I will be blamed for something.
-A_3: I will be threatened by something or someone.
-M_1: A potential sexual or romantic partner is present.
-M_2: Physical attractiveness is important.
-M_3: This situation is full of sexual innuendos.
-O_1: This situation is pleasant.
-O_2: This situation appears playful.
-O_3: This situation is full of joy and relaxation.
-N_1: This situation may trigger stress.
-N_2: This situation may cause tension.
-N_3: This situation may lead to a feeling of frustration.
-Dc_1: It is possible to deceive others.
-Dc_2: Someone in the situation may act dishonestly.
-Dc_3: It is possible to be dishonest with others.
-S_1: Close interpersonal relationships are important, or might develop.
-S_2: Others will send many communication signals.
-S_3: Communicating with others is important or welcome.
+D_1: The phrase suggests that I must complete a task.
+D_2: The phrase implies a task-oriented mindset.
+D_3: The phrase indicates that I need to fulfill responsibilities.
+I_1: The phrase conveys intellectual stimulation.
+I_2: The phrase suggests an opportunity to showcase intellectual ability.
+I_3: The phrase implies the need for deep thought.
+A_1: The phrase suggests that I might be criticized.
+A_2: The phrase implies that I may be blamed for something.
+A_3: The phrase indicates the presence of a potential threat.
+M1: The phrase hints at the presence of a potential sexual or romantic partner.
+M2: The phrase emphasizes the importance of physical attractiveness.
+M3: The phrase is full of sexual innuendos.
+O1: The phrase makes the overall situation seem pleasant.
+O2: The phrase conveys a playful and relaxed atmosphere.
+O3: The phrase evokes feelings of joy and relaxation.
+N1: The phrase may trigger a sense of stress.
+N2: The phrase conveys a sense of tension or anxiety.
+N3: The phrase makes me feel frustrated.
+Dc1: The phrase suggests that there is a possibility of deception.
+Dc2: The phrase conveys the potential for dishonest behavior.
+Dc3: The phrase implies that untruthfulness might be present.
+S1: The phrase hints at the development of close interpersonal relationships.
+S2: The phrase conveys signals of frequent communication.
+S3: The phrase makes interacting with others appear welcoming.
 
 ## OUTPUT
 A JSON dict with the following structure:
