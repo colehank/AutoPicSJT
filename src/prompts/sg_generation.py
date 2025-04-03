@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from string import Template
 
 sg_condition_system = """
@@ -21,7 +23,7 @@ You will be given a narrative.
 - The relations should be unique and not repeated.
 - The graph only have 2 types of nodes: object_node and attribute_node.
 - The graph only have 2 types of edges: relation_edge and attribute_edge.
-- The node and edge content should be clear and short. 
+- The node and edge content should be clear and short.
 
 
 ## OUTPUT
@@ -80,12 +82,12 @@ few_shots_output_1 = """
 """
 
 few_shots_narrative_2 = """
-Shortly after sending a private email with holiday pictures, Ye realize that Ye sent the email to the wrong address. 
-By mistake, Ye's bank advisor is the email recipient. 
+Shortly after sending a private email with holiday pictures, Ye realize that Ye sent the email to the wrong address.
+By mistake, Ye's bank advisor is the email recipient.
 The next day, Ye happen to meet Ye's bank advisor across the stree
 """
 few_shots_output_2 = """{
-    'SceneGraph': 
+    'SceneGraph':
         {'nodes': [
             ['object_1', {'type': 'object_node', 'value': 'Ye'}],
             ['object_2', {'type': 'object_node', 'value': 'bank advisor'}],
@@ -109,10 +111,18 @@ few_shots_output_2 = """{
 """
 
 prompt_template = [
-    {"role": "system", "content": sg_condition_system},
-    {"role": "user", "content": Template(sg_condition_frame).substitute(passage=few_shots_narrative_1)},
-    {"role": "assistant", "content": few_shots_output_1},
-    {"role": "user", "content":  Template(sg_condition_frame).substitute(passage=few_shots_narrative_2)},
-    {"role": "assistant", "content": few_shots_output_2},
-    {"role": "user", "content": sg_condition_frame},
+    {'role': 'system', 'content': sg_condition_system},
+    {
+        'role': 'user', 'content': Template(
+            sg_condition_frame,
+        ).substitute(passage=few_shots_narrative_1),
+    },
+    {'role': 'assistant', 'content': few_shots_output_1},
+    {
+        'role': 'user', 'content':  Template(
+            sg_condition_frame,
+        ).substitute(passage=few_shots_narrative_2),
+    },
+    {'role': 'assistant', 'content': few_shots_output_2},
+    {'role': 'user', 'content': sg_condition_frame},
 ]

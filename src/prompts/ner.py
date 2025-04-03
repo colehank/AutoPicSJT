@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 from string import Template
 
-ner_system = """Your task is to extract named entities from the given paragraph and perform coreference resolution. 
-Identify all named entities such as people, organizations, locations, dates, and other relevant entities. 
-Note that pronouns like "you" must also be identified as named entities. 
-For entities that share the same meaning (for example, "cinema" and "movie theater"), consolidate them into a single entry without repetition. 
+ner_system = """Your task is to extract named entities from the given paragraph and perform coreference resolution.
+Identify all named entities such as people, organizations, locations, dates, and other relevant entities.
+Note that pronouns like "you" must also be identified as named entities.
+For entities that share the same meaning (for example, "cinema" and "movie theater"), consolidate them into a single entry without repetition.
 Respond with a JSON list of unique named entities.
 """
 
@@ -19,8 +21,8 @@ one_shot_ner_output = """{"named_entities":
 ner_conditioned_frame = """$passage"""
 
 prompt_template = [
-    {"role": "system", "content": ner_system},
-    {"role": "user", "content": one_shot_ner_paragraph},
-    {"role": "assistant", "content": one_shot_ner_output},
-    {"role": "user", "content": ner_conditioned_frame}
+    {'role': 'system', 'content': ner_system},
+    {'role': 'user', 'content': one_shot_ner_paragraph},
+    {'role': 'assistant', 'content': one_shot_ner_output},
+    {'role': 'user', 'content': ner_conditioned_frame},
 ]

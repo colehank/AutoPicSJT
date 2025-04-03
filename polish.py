@@ -1,11 +1,19 @@
 # %%
-import src
+from __future__ import annotations
+
 import os
 import os.path as op
 import pickle
+
 import networkx as nx
+import numpy as np
 from wasabi import msg
-#%%
+
+import src
+from src import PromptTemplateManager
+from src.models.llms import TempletLLM
+from src.prompts.diamonds import prompt_template
+# %%
 trait = 'N'
 item_id = '2'
 
@@ -14,19 +22,17 @@ with open(p, 'rb') as f:
     res = pickle.load(f)
 situs = src.DataManager().read('situation_judgment_test', 'SJTs', extract_stiu=True)
 diamonds = src.DataManager().read('situation_DIAMONDS', 'DIAMONDS')
-#%%
-from src import PromptTemplateManager
+# %%
 pm = PromptTemplateManager()
-#%%
-from src.prompts.diamonds import prompt_template
+# %%
 src.print_conversation(prompt_template)
-#%%
-from src.models.llms import TempletLLM
+# %%
 llm = TempletLLM('diamonds')
-#%%
-res = llm.call(situs['N']['1'], word = '@!ddf')
-#%%
-import numpy as np
+# %%
+res = llm.call(situs['N']['1'], word='@!ddf')
+# %%
+
+
 def calculate_dimension_means(data):
     all_dim = np.unique(np.array([i.split('_')[0] for i in data.keys()]))
     means = []
@@ -38,7 +44,7 @@ def calculate_dimension_means(data):
         means.append(np.mean(dim_values))
     return np.array(means)
 
+
 means = calculate_dimension_means(res['DIAMONDS'])
 print(means)
-#%%
-
+# %%

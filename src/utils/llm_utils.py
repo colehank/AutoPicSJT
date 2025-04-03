@@ -1,9 +1,15 @@
-from typing import Optional
-import re
+from __future__ import annotations
+
 import json
+import re
+from typing import Any
+from typing import Dict
+from typing import Optional
+
 from wasabi import msg
 
-def extract_json(text: str) -> dict:
+
+def extract_json(text: str) -> dict[Any, Any] | None:
     """
     Extract JSON from a string.
 
@@ -17,18 +23,19 @@ def extract_json(text: str) -> dict:
     data: dict
         The extracted JSON data.
     """
-    if "```json" in text:
-        text = re.sub(r"```json", "", text)  # 移除 ```json
-    if "```" in text:
-        text = re.sub(r"```", "", text)
+    if '```json' in text:
+        text = re.sub(r'```json', '', text)  # 移除 ```json
+    if '```' in text:
+        text = re.sub(r'```', '', text)
 
-    text = text.replace(r"\n", "\n")  # 还原 \n 为换行符
+    text = text.replace(r'\n', '\n')  # 还原 \n 为换行符
 
     try:
         return json.loads(text)
     except json.JSONDecodeError:
         return None
-    
+
+
 def print_conversation(msgs):
     """
     Print the conversation in a readable format.
@@ -39,7 +46,8 @@ def print_conversation(msgs):
         The conversation messages to print.
     """
     for turn in msgs:
-        icon = "🤖" if turn['role'] == "assistant" else (
-            "⚙️" if turn['role'] == "system" else "👤")
+        icon = '🤖' if turn['role'] == 'assistant' else (
+            '⚙️' if turn['role'] == 'system' else '👤'
+        )
         msg.divider(icon)
         print(turn['content'])

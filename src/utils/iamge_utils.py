@@ -1,10 +1,14 @@
-from PIL import Image, ImageOps
+from __future__ import annotations
+
+from PIL import Image
+from PIL import ImageOps
+
 
 def make_sequence(
-    image_listL:list, 
-    border_width=10, 
-    border_color="white"
-    ) -> Image:
+    image_list: list,
+    border_width=10,
+    border_color='white',
+) -> Image:
     """
     Concatenate images horizontally.
 
@@ -29,7 +33,7 @@ def make_sequence(
     total_width = sum(im.width for im in bordered_images)
     max_height = max(im.height for im in bordered_images)
 
-    new_im = Image.new("RGBA", (total_width, max_height), border_color)
+    new_im = Image.new('RGBA', (total_width, max_height), border_color)
 
     x_offset = 0
     for im in bordered_images:
@@ -37,4 +41,3 @@ def make_sequence(
         x_offset += im.width
 
     return new_im
-

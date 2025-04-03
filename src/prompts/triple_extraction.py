@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 from string import Template
 
-ner_conditioned_re_system = """Your task is to construct an RDF (Resource Description Framework) graph from the given passages and named entity lists. 
-Respond with a JSON list of triples, with each triple representing a relationship in the RDF graph. 
+ner_conditioned_re_system = """Your task is to construct an RDF (Resource Description Framework) graph from the given passages and named entity lists.
+Respond with a JSON list of triples, with each triple representing a relationship in the RDF graph.
 
 Pay attention to the following requirements:
 - Each triple should contain at least one, but preferably two, of the named entities in the list for each passage.
@@ -43,13 +45,13 @@ objects = [
 ]
 
 user_prompt = Template(ner_conditioned_re_frame).substitute(
-    passage=one_shot_ner_paragraph, 
-    named_entities=one_shot_ner_entities
+    passage=one_shot_ner_paragraph,
+    named_entities=one_shot_ner_entities,
 )
 
 prompt_template = [
-    {"role": "system", "content": ner_conditioned_re_system},
-    {"role": "user", "content": user_prompt},
-    {"role": "assistant", "content": one_shot_output},
-    {"role": "user", "content": ner_conditioned_re_frame}
+    {'role': 'system', 'content': ner_conditioned_re_system},
+    {'role': 'user', 'content': user_prompt},
+    {'role': 'assistant', 'content': one_shot_output},
+    {'role': 'user', 'content': ner_conditioned_re_frame},
 ]

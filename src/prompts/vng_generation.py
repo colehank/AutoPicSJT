@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from string import Template
 
 vng_condition_system = """
@@ -49,7 +51,7 @@ $passage
 """
 
 # Few-shot 示例数据
-few_shot_narrative_1 = """You're on the tram with a friend. At one stop, an attractive woman gets on. 
+few_shot_narrative_1 = """You're on the tram with a friend. At one stop, an attractive woman gets on.
 As she passes you, your friend whistles after her.
 The woman turns irritated and looks at you"""
 
@@ -61,7 +63,7 @@ few_shot_output_1 = """{"VNG": {
     }
 }"""
 
-few_shot_narrative_2 = """You are sitting in the middle of a crowded movie theater. 
+few_shot_narrative_2 = """You are sitting in the middle of a crowded movie theater.
 Shortly after the film has started, you realize that you made a mistake in the cinema and ended up in the wrong film"""
 
 few_shot_output_2 = """{"VNG": {
@@ -80,12 +82,24 @@ few_shot_output_3 = """{"VNG": {
 }"""
 
 prompt_template = [
-    {"role": "system", "content": vng_condition_system},
-    {"role": "user", "content": Template(vng_conditioned_re_frame).substitute(passage=few_shot_narrative_1)},
-    {"role": "assistant", "content": few_shot_output_1},
-    {"role": "user", "content": Template(vng_conditioned_re_frame).substitute(passage=few_shot_narrative_2)},
-    {"role": "assistant", "content": few_shot_output_2},
-    {"role": "user", "content": Template(vng_conditioned_re_frame).substitute(passage=few_shot_narrative_3)},
-    {"role": "assistant", "content": few_shot_output_3},
-    {"role": "user", "content": vng_conditioned_re_frame}
+    {'role': 'system', 'content': vng_condition_system},
+    {
+        'role': 'user', 'content': Template(
+            vng_conditioned_re_frame,
+        ).substitute(passage=few_shot_narrative_1),
+    },
+    {'role': 'assistant', 'content': few_shot_output_1},
+    {
+        'role': 'user', 'content': Template(
+            vng_conditioned_re_frame,
+        ).substitute(passage=few_shot_narrative_2),
+    },
+    {'role': 'assistant', 'content': few_shot_output_2},
+    {
+        'role': 'user', 'content': Template(
+            vng_conditioned_re_frame,
+        ).substitute(passage=few_shot_narrative_3),
+    },
+    {'role': 'assistant', 'content': few_shot_output_3},
+    {'role': 'user', 'content': vng_conditioned_re_frame},
 ]

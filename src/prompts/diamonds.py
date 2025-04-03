@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from string import Template
+
 from ..datasets import DataManager
 
 diamonds = DataManager().read('situation_DIAMONDS', 'DIAMONDS')
@@ -7,11 +10,11 @@ _dim_system = """
 You are a psychologist who is master at personality and situation.
 
 ## GOAL
-Your task is to evaluate the extent to which a word or phrase in the given scenario aligns with the statements below, 
+Your task is to evaluate the extent to which a word or phrase in the given scenario aligns with the statements below,
 from 1 (not at all applicable) to 7 (very much applicable).
 
 ## Background
-The DIAMONDS test consists of eight dimensions: 
+The DIAMONDS test consists of eight dimensions:
 D(Duty), I(Intellect), A(Adversity), M(Mating), O(pOsitivity), N(Negativity), Dc(Deception), S(Sociality).
 Each dimension consists of 3 of statements that describe the situation.
 
@@ -80,7 +83,7 @@ WORD/PHRASE:
 $word
 """
 
-one_shot_paragraph = """You are sitting in the middle of a crowded movie theater. 
+one_shot_paragraph = """You are sitting in the middle of a crowded movie theater.
 Shortly after the film has started, you realize that you made a mistake in the cinema and ended up in the wrong film"""
 one_shot_word = """crowded"""
 
@@ -117,18 +120,24 @@ one_shot_output = """{
 """
 
 prompt_template = [
-    {"role": "system", "content": Template(_dim_system).substitute(
-        D = diamonds['Duty'],
-        I = diamonds['Intellect'],
-        A = diamonds['Adversity'],
-        M = diamonds['Mating'],
-        O = diamonds['pOsitivity'],
-        N = diamonds['Negativity'],
-        Dc = diamonds['Deception'],  # Changed D to DC for Deception
-        S = diamonds['Sociality'],)},
-    {"role": "user", "content": Template(conditioned_frame).substitute(
-        passage=one_shot_paragraph,
-        word=one_shot_word)},
-    {"role": "assistant", "content": one_shot_output},
-    {"role": "user", "content": conditioned_frame}
+    {
+        'role': 'system', 'content': Template(_dim_system).substitute(
+            D=diamonds['Duty'],
+            I=diamonds['Intellect'],
+            A=diamonds['Adversity'],
+            M=diamonds['Mating'],
+            O=diamonds['pOsitivity'],
+            N=diamonds['Negativity'],
+            Dc=diamonds['Deception'],  # Changed D to DC for Deception
+            S=diamonds['Sociality'],
+        ),
+    },
+    {
+        'role': 'user', 'content': Template(conditioned_frame).substitute(
+            passage=one_shot_paragraph,
+            word=one_shot_word,
+        ),
+    },
+    {'role': 'assistant', 'content': one_shot_output},
+    {'role': 'user', 'content': conditioned_frame},
 ]

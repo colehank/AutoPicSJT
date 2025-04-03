@@ -1,31 +1,34 @@
+from __future__ import annotations
+
 import matplotlib.pyplot as plt
 import networkx as nx
 
+
 def draw_G(
-    G, 
+    G,
     ax=None,
-    figsize=(6, 6), 
+    figsize=(6, 6),
     title='',
-    node_fontsize=10, 
-    edge_fontsize=10, 
+    node_fontsize=10,
+    edge_fontsize=10,
     node_size=400,
     dpi=300,
-    show_node_value=True, 
+    show_node_value=True,
     show_edge_value=True,
-    object_node_color='skyblue', 
+    object_node_color='skyblue',
     attribute_node_color='pink',
-    relation_edge_color='black', 
+    relation_edge_color='black',
     attribute_edge_color='lightgray',
-    layout='spring'
+    layout='spring',
 ):
     """
-    绘制场景图 G, 并提供以下可配置功能: 
+    绘制场景图 G, 并提供以下可配置功能:
       - 是否显示节点的 value(例如 "private email")
       - 是否显示关系边的 value(注意只有 relation_edge 有值)
       - 可设置不同类型节点(object_node 与 attribute_node)的颜色
       - 可设置不同类型边(relation_edge 与 attribute_edge)的颜色
       - 可选择绘制图的布局(如 'spring', 'circular', 'kamada_kawai', 'shell')
-    
+
     :param G: nx.DiGraph 对象
     :param figsize: 图形大小
     :param title: 图标题
@@ -53,15 +56,23 @@ def draw_G(
         pos = nx.shell_layout(G)
     else:
         pos = nx.spring_layout(G, seed=42, k=0.8)
-    
+
     returnfig = False
     if ax is None:
         returnfig = True
         fig, ax = plt.subplots(figsize=figsize, dpi=dpi)
-    
+
     # 分别提取不同类型的边
-    relation_edges = [(u, v) for u, v, data in G.edges(data=True) if data.get("type") == "relation_edge"]
-    attribute_edges = [(u, v) for u, v, data in G.edges(data=True) if data.get("type") == "attribute_edge"]
+    relation_edges = [
+        (u, v) for u, v, data in G.edges(
+            data=True,
+        ) if data.get('type') == 'relation_edge'
+    ]
+    attribute_edges = [
+        (u, v) for u, v, data in G.edges(
+            data=True,
+        ) if data.get('type') == 'attribute_edge'
+    ]
 
     # 绘制关系边(object->object), 采用指定颜色
     nx.draw_networkx_edges(
@@ -75,7 +86,7 @@ def draw_G(
         edge_color=relation_edge_color,
         min_source_margin=15,
         min_target_margin=15,
-        connectionstyle='arc3, rad=.1'
+        connectionstyle='arc3, rad=.1',
     )
 
     # 绘制属性边(attribute->object), 采用指定颜色
@@ -89,12 +100,20 @@ def draw_G(
         width=2,
         edge_color=attribute_edge_color,
         min_source_margin=15,
-        min_target_margin=15
+        min_target_margin=15,
     )
 
     # 根据节点类型提取不同的节点
-    object_nodes = [n for n, d in G.nodes(data=True) if d.get("type") == "object_node"]
-    attribute_nodes = [n for n, d in G.nodes(data=True) if d.get("type") == "attribute_node"]
+    object_nodes = [
+        n for n, d in G.nodes(
+            data=True,
+        ) if d.get('type') == 'object_node'
+    ]
+    attribute_nodes = [
+        n for n, d in G.nodes(
+            data=True,
+        ) if d.get('type') == 'attribute_node'
+    ]
 
     # 绘制 object 节点(客体节点)——蓝色
     nx.draw_networkx_nodes(
@@ -105,7 +124,7 @@ def draw_G(
         node_size=node_size,
         node_color=object_node_color,
         node_shape='o',
-        edgecolors='gray'
+        edgecolors='gray',
     )
 
     # 绘制 attribute 节点——粉色
@@ -117,12 +136,12 @@ def draw_G(
         node_size=node_size,
         node_color=attribute_node_color,
         node_shape='o',
-        edgecolors='gray'
+        edgecolors='gray',
     )
 
     # 根据参数决定是否绘制节点标签, 显示节点的 value
     if show_node_value:
-        labels = {n: d.get("value", n) for n, d in G.nodes(data=True)}
+        labels = {n: d.get('value', n) for n, d in G.nodes(data=True)}
         nx.draw_networkx_labels(
             G,
             pos,
@@ -134,9 +153,9 @@ def draw_G(
     # 根据参数决定是否绘制边标签, 仅对 relation_edge 绘制边的 value
     if show_edge_value:
         edge_labels = {
-            (u, v): d.get("value", "")
+            (u, v): d.get('value', '')
             for u, v, d in G.edges(data=True)
-            if d.get("type") == "relation_edge"
+            if d.get('type') == 'relation_edge'
         }
         nx.draw_networkx_edge_labels(
             G,
@@ -145,9 +164,9 @@ def draw_G(
             ax=ax,
             font_size=edge_fontsize,
             label_pos=0.5,
-            bbox=dict(facecolor='white', edgecolor='none', pad=0.5)
+            bbox=dict(facecolor='white', edgecolor='none', pad=0.5),
         )
-        
+
     x_vals, y_vals = zip(*pos.values())
     x_min, x_max = min(x_vals), max(x_vals)
     y_min, y_max = min(y_vals), max(y_vals)
@@ -158,7 +177,7 @@ def draw_G(
 
     ax.set_title(title, fontsize=16)
     plt.tight_layout()
-    
+
     if returnfig:
         ax.spines['top'].set_visible(False)
         ax.spines['bottom'].set_visible(False)
@@ -167,14 +186,15 @@ def draw_G(
         ax.axis('off')
         fig.tight_layout()
         return fig
-    
+
+
 def plot_vng_sg(Gs):
     plt.close('all')
     vng_map = {
         'E': 'Establisher',
         'I': 'Initial',
         'Pr': 'Prolongation',
-        'P': 'Peak'
+        'P': 'Peak',
     }
     fig_width = 4*len(Gs)
     fig_height = 4
@@ -182,11 +202,14 @@ def plot_vng_sg(Gs):
     fig, axs = plt.subplots(1, len(Gs), figsize=(fig_size), dpi=300)
 
     for i, (vng, G) in enumerate(Gs.items()):
-        draw_G(G, ax=axs[i], title=vng_map[vng], node_fontsize=8, edge_fontsize=8)
+        draw_G(
+            G, ax=axs[i], title=vng_map[vng],
+            node_fontsize=8, edge_fontsize=8,
+        )
         axs[i].spines['top'].set_visible(False)
         axs[i].spines['bottom'].set_visible(False)
         axs[i].spines['left'].set_visible(False)
-        if i == len(Gs) - 1: 
+        if i == len(Gs) - 1:
             axs[i].spines['right'].set_visible(False)
 
     plt.tight_layout()
