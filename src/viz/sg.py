@@ -160,6 +160,12 @@ def draw_G(
     plt.tight_layout()
     
     if returnfig:
+        ax.spines['top'].set_visible(False)
+        ax.spines['bottom'].set_visible(False)
+        ax.spines['left'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.axis('off')
+        fig.tight_layout()
         return fig
     
 def plot_vng_sg(Gs):
