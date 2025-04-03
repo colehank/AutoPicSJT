@@ -76,7 +76,7 @@ def save_results(res, result_dir):
     del save_res['fig_Gs']
     pickle_path = op.join(result_dir, trait, item_id, f"{res['itemID']}.pkl")
     with open(pickle_path, 'wb') as f:
-        pickle.dump(save_res, f)
+        pickle.dump(save_res, f)        
 #%%
 if __name__ == '__main__':
     for trait in tqdm(['O', 'C', 'E', 'A', 'N'], desc="Running traits", position=0):
@@ -101,19 +101,19 @@ if __name__ == '__main__':
     msg.good("Ha! All tasks completed successfully!")
 
 # %%
-for trait in ['O', 'C', 'E', 'A', 'N']:
-    for item_id in range(0, 22):
-        note = f"*PersonalitySJT's SceneGraph - {trait}_{item_id} "
-        print(f"\r{note}", flush=True, end='')
-        result_path = op.join('results', trait, str(item_id), f"{trait}_{item_id}.pkl")
-        with open(result_path, 'rb') as f:
-            res = pickle.load(f)
-        G = res['G']
-        Gs = res['Gs']
-        fig_G = src.draw_G(G, title=note, dpi=300)
-        fig_Gs = src.viz.plot_vng_sg(Gs)
-        fig_Gs.text(0.5, 0, note, fontsize=10, ha='center', va='bottom')
-        fig_G.savefig(op.join('results', trait, str(item_id), f"SceneGraph_{res['itemID']}.png"), dpi=300, transparent=True, bbox_inches='tight')
-        fig_Gs.savefig(op.join('results', trait, str(item_id), f"SceneGraph_VNG_{res['itemID']}.png"), dpi=300, transparent=True, bbox_inches='tight')
-        plt.close('all')
+# for trait in ['O', 'C', 'E', 'A', 'N']:
+#     for item_id in range(0, 22):
+#         note = f"*PersonalitySJT's EventGraph - {trait}_{item_id} "
+#         print(f"\r{note}", flush=True, end='')
+#         result_path = op.join('results', trait, str(item_id), f"{trait}_{item_id}.pkl")
+#         with open(result_path, 'rb') as f:
+#             res = pickle.load(f)
+#         G = res['G']
+#         Gs = res['Gs']
+#         fig_G = src.draw_G(G, title=note, dpi=300)
+#         fig_Gs = src.viz.plot_vng_sg(Gs)
+#         fig_Gs.text(0.5, 0, note, fontsize=10, ha='center', va='bottom')
+#         fig_G.savefig(op.join('results', trait, str(item_id), f"EventGraph_{res['itemID']}.tif"), dpi=300, bbox_inches='tight')
+#         fig_Gs.savefig(op.join('results', trait, str(item_id), f"EventGraph_VNG_{res['itemID']}.tif"), dpi=300, bbox_inches='tight')
+#         plt.close('all')
 # %%
