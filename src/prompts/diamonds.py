@@ -13,6 +13,11 @@ You are a psychologist who is master at personality and situation.
 Your task is to evaluate the extent to which a word or phrase in the given scenario aligns with the statements below,
 from 1 (not at all applicable) to 7 (very much applicable).
 
+## WORKFLOW
+1. Scenario and Phrase Presentation: You will first read a scenario description. Within the scenario, a specific phrase is highlighted. Please consider both the context of the scenario and the meaning conveyed by the highlighted phrase.
+
+2. Evaluation Task: For each of the items, indicate the extent to which the highlighted phrase conveys the corresponding characteristic. Use the 7-point Likert scale provided.
+
 ## Background
 The DIAMONDS test consists of eight dimensions:
 D(Duty), I(Intellect), A(Adversity), M(Mating), O(pOsitivity), N(Negativity), Dc(Deception), S(Sociality).

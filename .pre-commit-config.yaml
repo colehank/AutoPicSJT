@@ -28,10 +28,10 @@ repos:
     hooks:
     -   id: pyupgrade
         args: [--py39-plus]
--   repo: https://github.com/hhatto/autopep8
-    rev: v2.3.2
-    hooks:
-    -   id: autopep8
+# -   repo: https://github.com/hhatto/autopep8
+#     rev: v2.3.2
+#     hooks:
+#     -   id: autopep8
 # -   repo: https://github.com/pre-commit/mirrors-mypy
 #     rev: v1.15.0
 #     hooks:

@@ -56,8 +56,8 @@ class BaseLLM:
         self,
         msg: list[dict],
         json=True,
+        retries=3,
     ) -> dict[Any, Any] | str:
-        retries = 3
         for attempt in range(retries):
             try:
                 response = self.client.chat.completions.create(

@@ -10,7 +10,7 @@ def print_G(G):
     :param G: The graph object containing nodes and edges.
     """
     print(G)
-    msg.info('Nodes:')
+    msg.info('\nNodes:')
     for node, data in G.nodes(data=True):
         print(node, data)
 
@@ -41,3 +41,38 @@ def build_G(scene_graph_dict):
         G.add_edge(src, dst, **edge_attrs)
 
     return G
+
+
+def get_node_id(G, value):
+    """
+    在图 G 中查找具有指定 value 的节点, 返回该节点的 id.
+
+    :param G: nx.DiGraph 对象
+    :param target_value: 要查找的节点 value
+    :return: 匹配节点的 id, 如果找不到则返回 None
+    """
+    found = False
+    for node, data in G.nodes(data=True):
+        val = data.get('value')
+        if val == value:
+            return node
+    if not found:
+        msg.warn(f'No node found with value: {value}')
+    return None
+
+
+def get_edge_id(G, value):
+    """
+    在图 G 中查找具有指定 value 的边, 返回该边的 id.
+
+    :param G: nx.DiGraph 对象
+    :param target_value: 要查找的边 value
+    :return: 匹配边的 id (如果未设置则返回 (u, v)), 如果找不到则返回 None
+    """
+    found = False
+    for u, v, data in G.edges(data=True):
+        if data.get('value') == value:
+            return data.get('id', (u, v))
+    if not found:
+        msg.warn(f'No edge found with value: {value}')
+    return None

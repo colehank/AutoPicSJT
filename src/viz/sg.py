@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import matplotlib.pyplot as plt
 import networkx as nx
+plt.rcParams['font.family'] = 'Comic Sans MS'
+plt.rcParams['font.family'] = 'Times New Roman'
 
 
 def draw_G(
@@ -11,7 +13,7 @@ def draw_G(
     title='',
     node_fontsize=10,
     edge_fontsize=10,
-    node_size=400,
+    node_size=800,
     dpi=300,
     show_node_value=True,
     show_edge_value=True,
@@ -19,14 +21,23 @@ def draw_G(
     attribute_node_color='pink',
     relation_edge_color='black',
     attribute_edge_color='lightgray',
+    object_node_edge_color='white',
+    attribute_node_edge_color='white',
+    colors=None,
     layout='spring',
 ):
     """
     绘制场景图 G, 并提供以下可配置功能:
-      - 是否显示节点的 value(例如 "private email")
-      - 是否显示关系边的 value(注意只有 relation_edge 有值)
+      - 是否显示节点的 value (例如 "private email")
+      - 是否显示关系边的 value (注意只有 relation_edge 有值)
       - 可设置不同类型节点(object_node 与 attribute_node)的颜色
       - 可设置不同类型边(relation_edge 与 attribute_edge)的颜色
+      - 可设置节点本身的边框颜色
+      - 当传入 colors 参数时，启动指定节点与边的颜色绘制。colors 格式为:
+          {
+              'node': { node_id: (fill_color, edge_color), ... },
+              'edge': { edge_id: edge_color, ... }
+          }
       - 可选择绘制图的布局(如 'spring', 'circular', 'kamada_kawai', 'shell')
 
     :param G: nx.DiGraph 对象
@@ -35,15 +46,22 @@ def draw_G(
     :param node_fontsize: 节点标签字体大小
     :param edge_fontsize: 边标签字体大小
     :param node_size: 节点大小
-    :param show_node_value: 是否显示节点的 value(True: 显示 value; False: 不显示)
-    :param show_edge_value: 是否显示关系边的 value(仅对 relation_edge 有效)
-    :param object_node_color: object_node 节点的颜色
-    :param attribute_node_color: attribute_node 节点的颜色
-    :param relation_edge_color: relation_edge 边的颜色
-    :param attribute_edge_color: attribute_edge 边的颜色
+    :param dpi: 图像 dpi
+    :param show_node_value: 是否显示节点的 value (True: 显示; False: 不显示)
+    :param show_edge_value: 是否显示关系边的 value (仅对 relation_edge 有效)
+    :param object_node_color: object_node 节点的默认填充颜色
+    :param attribute_node_color: attribute_node 节点的默认填充颜色
+    :param relation_edge_color: relation_edge 边的默认颜色
+    :param attribute_edge_color: attribute_edge 边的默认颜色
+    :param object_node_edge_color: object_node 节点的默认边框颜色
+    :param attribute_node_edge_color: attribute_node 节点的默认边框颜色
+    :param colors: 指定节点与边颜色的字典, 格式见上文说明
     :param layout: 图的布局方式, 可选 'spring', 'circular', 'kamada_kawai', 'shell'
     :return: matplotlib.figure.Figure 对象
     """
+    import matplotlib.pyplot as plt
+    import networkx as nx
+
     # 根据参数选择布局
     plt.close('all')
     if layout == 'spring':
@@ -64,17 +82,24 @@ def draw_G(
 
     # 分别提取不同类型的边
     relation_edges = [
-        (u, v) for u, v, data in G.edges(
-            data=True,
-        ) if data.get('type') == 'relation_edge'
+        (u, v) for u, v, data in G.edges(data=True) if data.get('type') == 'relation_edge'
     ]
     attribute_edges = [
-        (u, v) for u, v, data in G.edges(
-            data=True,
-        ) if data.get('type') == 'attribute_edge'
+        (u, v) for u, v, data in G.edges(data=True) if data.get('type') == 'attribute_edge'
     ]
 
-    # 绘制关系边(object->object), 采用指定颜色
+    # 处理 relation_edge 的颜色
+    relation_edge_colors = []
+    for u, v in relation_edges:
+        data = G.get_edge_data(u, v)
+        edge_key = data.get('id', (u, v))
+        if colors and 'edge' in colors:
+            edge_color = colors['edge'].get(edge_key, relation_edge_color)
+        else:
+            edge_color = relation_edge_color
+        relation_edge_colors.append(edge_color)
+
+    # 绘制关系边 (object->object)
     nx.draw_networkx_edges(
         G,
         pos,
@@ -83,13 +108,24 @@ def draw_G(
         arrowstyle='-|>',
         arrowsize=20,
         width=2,
-        edge_color=relation_edge_color,
+        edge_color=relation_edge_colors,
         min_source_margin=15,
         min_target_margin=15,
         connectionstyle='arc3, rad=.1',
     )
 
-    # 绘制属性边(attribute->object), 采用指定颜色
+    # 处理 attribute_edge 的颜色
+    attribute_edge_colors = []
+    for u, v in attribute_edges:
+        data = G.get_edge_data(u, v)
+        edge_key = data.get('id', (u, v))
+        if colors and 'edge' in colors:
+            edge_color = colors['edge'].get(edge_key, attribute_edge_color)
+        else:
+            edge_color = attribute_edge_color
+        attribute_edge_colors.append(edge_color)
+
+    # 绘制属性边 (attribute->object)
     nx.draw_networkx_edges(
         G,
         pos,
@@ -98,7 +134,7 @@ def draw_G(
         arrowstyle='-|>',
         arrowsize=20,
         width=2,
-        edge_color=attribute_edge_color,
+        edge_color=attribute_edge_colors,
         min_source_margin=15,
         min_target_margin=15,
     )
@@ -115,29 +151,75 @@ def draw_G(
         ) if d.get('type') == 'attribute_node'
     ]
 
-    # 绘制 object 节点(客体节点)——蓝色
-    nx.draw_networkx_nodes(
-        G,
-        pos,
-        nodelist=object_nodes,
-        ax=ax,
-        node_size=node_size,
-        node_color=object_node_color,
-        node_shape='o',
-        edgecolors='gray',
-    )
+    # 绘制 object 节点 (客体节点)
+    if colors and 'node' in colors:
+        object_fill_colors = []
+        object_border_colors = []
+        for node in object_nodes:
+            if node in colors['node']:
+                fill, border = colors['node'][node]
+            else:
+                fill, border = object_node_color, object_node_edge_color
+            object_fill_colors.append(fill)
+            object_border_colors.append(border)
+        nx.draw_networkx_nodes(
+            G,
+            pos,
+            nodelist=object_nodes,
+            ax=ax,
+            node_size=node_size,
+            node_color=object_fill_colors,
+            node_shape='o',
+            edgecolors=object_border_colors,
+            linewidths=1.5,
+        )
+    else:
+        nx.draw_networkx_nodes(
+            G,
+            pos,
+            nodelist=object_nodes,
+            ax=ax,
+            node_size=node_size,
+            node_color=object_node_color,
+            node_shape='o',
+            edgecolors=object_node_edge_color,
+            linewidths=1.5,
+        )
 
-    # 绘制 attribute 节点——粉色
-    nx.draw_networkx_nodes(
-        G,
-        pos,
-        nodelist=attribute_nodes,
-        ax=ax,
-        node_size=node_size,
-        node_color=attribute_node_color,
-        node_shape='o',
-        edgecolors='gray',
-    )
+    # 绘制 attribute 节点
+    if colors and 'node' in colors:
+        attribute_fill_colors = []
+        attribute_border_colors = []
+        for node in attribute_nodes:
+            if node in colors['node']:
+                fill, border = colors['node'][node]
+            else:
+                fill, border = attribute_node_color, attribute_node_edge_color
+            attribute_fill_colors.append(fill)
+            attribute_border_colors.append(border)
+        nx.draw_networkx_nodes(
+            G,
+            pos,
+            nodelist=attribute_nodes,
+            ax=ax,
+            node_size=node_size,
+            node_color=attribute_fill_colors,
+            node_shape='o',
+            edgecolors=attribute_border_colors,
+            linewidths=1.5,
+        )
+    else:
+        nx.draw_networkx_nodes(
+            G,
+            pos,
+            nodelist=attribute_nodes,
+            ax=ax,
+            node_size=node_size,
+            node_color=attribute_node_color,
+            node_shape='o',
+            edgecolors=attribute_node_edge_color,
+            linewidths=1.5,
+        )
 
     # 根据参数决定是否绘制节点标签, 显示节点的 value
     if show_node_value:
@@ -167,6 +249,7 @@ def draw_G(
             bbox=dict(facecolor='white', edgecolor='none', pad=0.5),
         )
 
+    # 调整坐标轴范围
     x_vals, y_vals = zip(*pos.values())
     x_min, x_max = min(x_vals), max(x_vals)
     y_min, y_max = min(y_vals), max(y_vals)
@@ -177,6 +260,7 @@ def draw_G(
 
     ax.set_title(title, fontsize=16)
     plt.tight_layout()
+    plt.close('all')
 
     if returnfig:
         ax.spines['top'].set_visible(False)
@@ -185,10 +269,11 @@ def draw_G(
         ax.spines['right'].set_visible(False)
         ax.axis('off')
         fig.tight_layout()
+        plt.close('all')
         return fig
 
 
-def plot_vng_sg(Gs):
+def draw_Gs(Gs):
     plt.close('all')
     vng_map = {
         'E': 'Establisher',
