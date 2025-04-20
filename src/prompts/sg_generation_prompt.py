@@ -24,7 +24,7 @@ You will be given a narrative.
 - The graph only have 2 types of nodes: object_node and attribute_node.
 - The graph only have 2 types of edges: relation_edge and attribute_edge.
 - The node and edge content should be clear and short.
-
+- DO NOT confuse the node's value with its identifier. For example, object_1's value is its corresponding content like "Ye", not "object_1".
 
 ## OUTPUT
 A JSON dict with the following structure:
@@ -124,5 +124,7 @@ prompt_template = [
         ).substitute(passage=few_shots_narrative_2),
     },
     {'role': 'assistant', 'content': few_shots_output_2},
+    {'role': 'user', 'content': 'good, keep it up!'},
+    {'role': 'assistant', 'content': 'ok, I will follow our previous conversation.'},
     {'role': 'user', 'content': sg_condition_frame},
 ]

@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import matplotlib.pyplot as plt
 import networkx as nx
+from matplotlib import colormaps as cm
+
+from ..utils.graph_utils import map_knowledge
 plt.rcParams['font.family'] = 'Comic Sans MS'
 plt.rcParams['font.family'] = 'Times New Roman'
 
@@ -25,6 +28,8 @@ def draw_G(
     attribute_node_edge_color='white',
     colors=None,
     layout='spring',
+    attribute_node_shape='o',
+    object_node_shape='o',
 ):
     """
     绘制场景图 G, 并提供以下可配置功能:
@@ -33,10 +38,13 @@ def draw_G(
       - 可设置不同类型节点(object_node 与 attribute_node)的颜色
       - 可设置不同类型边(relation_edge 与 attribute_edge)的颜色
       - 可设置节点本身的边框颜色
-      - 当传入 colors 参数时，启动指定节点与边的颜色绘制。colors 格式为:
+      - 当传入 colors 参数时，启动指定节点、边及标签的颜色绘制。colors 格式为:
           {
               'node': { node_id: (fill_color, edge_color), ... },
-              'edge': { edge_id: edge_color, ... }
+              'edge': { edge_id: edge_color, ... },
+              'label': {
+                  node_or_edge_id: label_color, ...   # 节点id或边 (u, v)
+              }
           }
       - 可选择绘制图的布局(如 'spring', 'circular', 'kamada_kawai', 'shell')
 
@@ -55,7 +63,7 @@ def draw_G(
     :param attribute_edge_color: attribute_edge 边的默认颜色
     :param object_node_edge_color: object_node 节点的默认边框颜色
     :param attribute_node_edge_color: attribute_node 节点的默认边框颜色
-    :param colors: 指定节点与边颜色的字典, 格式见上文说明
+    :param colors: 指定节点、边及标签颜色的字典, 格式见上文说明
     :param layout: 图的布局方式, 可选 'spring', 'circular', 'kamada_kawai', 'shell'
     :return: matplotlib.figure.Figure 对象
     """
@@ -141,14 +149,10 @@ def draw_G(
 
     # 根据节点类型提取不同的节点
     object_nodes = [
-        n for n, d in G.nodes(
-            data=True,
-        ) if d.get('type') == 'object_node'
+        n for n, d in G.nodes(data=True) if d.get('type') == 'object_node'
     ]
     attribute_nodes = [
-        n for n, d in G.nodes(
-            data=True,
-        ) if d.get('type') == 'attribute_node'
+        n for n, d in G.nodes(data=True) if d.get('type') == 'attribute_node'
     ]
 
     # 绘制 object 节点 (客体节点)
@@ -169,7 +173,7 @@ def draw_G(
             ax=ax,
             node_size=node_size,
             node_color=object_fill_colors,
-            node_shape='o',
+            node_shape=object_node_shape,
             edgecolors=object_border_colors,
             linewidths=1.5,
         )
@@ -181,7 +185,7 @@ def draw_G(
             ax=ax,
             node_size=node_size,
             node_color=object_node_color,
-            node_shape='o',
+            node_shape=object_node_shape,
             edgecolors=object_node_edge_color,
             linewidths=1.5,
         )
@@ -204,7 +208,7 @@ def draw_G(
             ax=ax,
             node_size=node_size,
             node_color=attribute_fill_colors,
-            node_shape='o',
+            node_shape=attribute_node_shape,
             edgecolors=attribute_border_colors,
             linewidths=1.5,
         )
@@ -216,30 +220,36 @@ def draw_G(
             ax=ax,
             node_size=node_size,
             node_color=attribute_node_color,
-            node_shape='o',
+            node_shape=attribute_node_shape,
             edgecolors=attribute_node_edge_color,
             linewidths=1.5,
         )
 
-    # 根据参数决定是否绘制节点标签, 显示节点的 value
+    # 绘制节点标签
     if show_node_value:
         labels = {n: d.get('value', n) for n, d in G.nodes(data=True)}
-        nx.draw_networkx_labels(
+        node_texts = nx.draw_networkx_labels(
             G,
             pos,
             labels=labels,
             ax=ax,
             font_size=node_fontsize,
+            font_color='black',  # 默认颜色
         )
+        # 如果指定了 label 的颜色，则更新节点标签颜色
+        if colors and 'label' in colors:
+            for n, text in node_texts.items():
+                label_color = colors['label'].get(n, 'black')
+                text.set_color(label_color)
 
-    # 根据参数决定是否绘制边标签, 仅对 relation_edge 绘制边的 value
+    # 绘制边标签 (仅对 relation_edge 绘制边的 value)
     if show_edge_value:
         edge_labels = {
             (u, v): d.get('value', '')
             for u, v, d in G.edges(data=True)
             if d.get('type') == 'relation_edge'
         }
-        nx.draw_networkx_edge_labels(
+        edge_texts = nx.draw_networkx_edge_labels(
             G,
             pos,
             edge_labels=edge_labels,
@@ -248,6 +258,11 @@ def draw_G(
             label_pos=0.5,
             bbox=dict(facecolor='white', edgecolor='none', pad=0.5),
         )
+        # 如果指定了 label 的颜色，则更新边标签颜色
+        if colors and 'label' in colors:
+            for edge, text in edge_texts.items():
+                label_color = colors['label'].get(edge, 'black')
+                text.set_color(label_color)
 
     # 调整坐标轴范围
     x_vals, y_vals = zip(*pos.values())
@@ -273,6 +288,7 @@ def draw_G(
         return fig
 
 
+
 def draw_Gs(Gs):
     plt.close('all')
     vng_map = {
@@ -281,21 +297,95 @@ def draw_Gs(Gs):
         'Pr': 'Prolongation',
         'P': 'Peak',
     }
-    fig_width = 4*len(Gs)
-    fig_height = 4
-    fig_size = (fig_width, fig_height)
-    fig, axs = plt.subplots(1, len(Gs), figsize=(fig_size), dpi=300)
-
-    for i, (vng, G) in enumerate(Gs.items()):
+    if len(Gs) == 1:
+        fig_width = 4
+        fig_height = 4
+        fig_size = (fig_width, fig_height)
+        fig, axs = plt.subplots(1, 1, figsize=(fig_size), dpi=300)
+        vng = list(Gs.keys())[0]
         draw_G(
-            G, ax=axs[i], title=vng_map[vng],
+            Gs[vng], ax=axs, title=vng_map[vng],
             node_fontsize=8, edge_fontsize=8,
         )
-        axs[i].spines['top'].set_visible(False)
-        axs[i].spines['bottom'].set_visible(False)
-        axs[i].spines['left'].set_visible(False)
-        if i == len(Gs) - 1:
-            axs[i].spines['right'].set_visible(False)
+        axs.spines['top'].set_visible(False)
+        axs.spines['bottom'].set_visible(False)
+        axs.spines['left'].set_visible(False)
+        axs.spines['right'].set_visible(False)
+        return fig
+    else:
 
-    plt.tight_layout()
-    return fig
+        fig_width = 4*len(Gs)
+        fig_height = 4
+        fig_size = (fig_width, fig_height)
+        fig, axs = plt.subplots(1, len(Gs), figsize=(fig_size), dpi=300)
+
+        for i, (vng, G) in enumerate(Gs.items()):
+            draw_G(
+                G, ax=axs[i], title=vng_map[vng],
+                node_fontsize=8, edge_fontsize=8,
+            )
+            axs[i].spines['top'].set_visible(False)
+            axs[i].spines['bottom'].set_visible(False)
+            axs[i].spines['left'].set_visible(False)
+            if i == len(Gs) - 1:
+                axs[i].spines['right'].set_visible(False)
+
+        plt.tight_layout()
+        return fig
+
+def draw_G_cue_highlight(G, cues, cmap='hsv', title=None, **kwargs):
+    """
+    绘制场景图G，并高亮显示指定的cues
+
+    参数:
+    G: nx.DiGraph 对象，场景图
+    cues: 需要高亮显示的cues列表
+    cmap: 颜色映射名称，默认为'hsv'
+    title: 图标题，默认为'SituCues'
+    **kwargs: 传递给draw_G的其他参数
+
+    返回:
+    matplotlib.figure.Figure 对象
+    """
+
+    def get_colors_by_cues(G, cues, cmap='gist_ncar'):
+        def custom_cmap(value):
+            colormap = cm.get_cmap(cmap)
+            return colormap(value)
+
+        colors_cue = [custom_cmap(i / len(cues)) for i in range(len(cues))]
+        gh_id = [map_knowledge(G, cue['content'], cue['type']) for cue in cues]
+        colors = {'edge': {}, 'label': {}}
+        for i, cue in enumerate(gh_id):
+            color = colors_cue[i]
+            # 检查cue是否为None
+            if cue is None:
+                continue
+            for j in cue:
+                if isinstance(j, tuple):  # 处理关系边
+                    colors['edge'][j] = color
+                    colors['label'][j] = color
+                if 'attribute' in j:  # 处理属性边
+                    colors['edge'][(j, f'object_{j.split("|")[-2]}')] = color
+                    colors['label'][(j, f'object_{j.split("|")[-2]}')] = color
+        return colors
+
+    # 获取高亮颜色
+    colors = get_colors_by_cues(G, cues, cmap=cmap)
+
+    # 设置默认参数
+    default_kwargs = {
+        'attribute_edge_color': 'black',
+        'attribute_node_shape': '^',
+        'object_node_color': 'lightgray',
+        'attribute_node_color': 'lightgray',
+        'title': title,
+    }
+
+    # 更新参数
+    for key, value in default_kwargs.items():
+        if key not in kwargs:
+            kwargs[key] = value
+
+    # 调用draw_G函数绘制图
+    return draw_G(G, colors=colors, **kwargs)

@@ -76,7 +76,7 @@ class BaseLLM:
                 BadRequestError, APIConnectionError,
             ) as err:
                 if attempt < retries - 1:
-                    time.sleep(1)
+                    continue
                 else:
                     print(f'after {attempt + 1} attempts, failed to call LLM')
                     raise err
@@ -86,7 +86,8 @@ class BaseLLM:
             extracted_json = llm_utils.extract_json(content)
             if extracted_json is None:
                 raise ValueError(
-                    'Failed to extract JSON from the response content',
+                    f'Failed to extract JSON from the response content',
+                    f'original content: {content}',
                 )
             return extracted_json
         else:
