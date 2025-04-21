@@ -29,9 +29,9 @@ class SituationProcessor:
             'sg': TempletLLM('sg_generation'),
             'vng': TempletLLM('vng_from_graph'),
             'cue_ext':  TempletLLM('cues_extraction'),
-            'cue_enr': TempletLLM('cue_enrich'),
             'cls_node': TempletLLM('classfy_node'),
             'G2str': TempletLLM('graph2prompt'),
+            'vng_polisher': TempletLLM('vng_polisher'),
         }
         self.cue_types = ['att|obj', 'obj-obj', 'att|obj-obj', 'obj-att|obj', 'att|obj-att|obj']
         self.debug = debug
@@ -94,13 +94,12 @@ class SituationProcessor:
             if cues == []:
                 continue
             else:
-                #TODO: 让这个llm指针对目标VNG进行，现在能看到全局，输出的结果与叙事逻辑不符
                 enriched_Gs_cues[vng_idx] = self._enrich_G_cues(
                 situ = self.situ, trait=self.trait, cues=cues, ref=self.ref,
                 )
 
-        self.enriched_Gs_cues:dict[str, nx.Graph] = enriched_Gs_cues
-        self.enriched_Gs = self._add_cues_to_Gs(
+        self.enriched_Gs_cues:dict[str, dict] = enriched_Gs_cues
+        self.enriched_Gs:dict[str, nx.Graph] = self._add_cues_to_Gs(
             enriched_Gs_cues=enriched_Gs_cues,
             Gs=self.Gs,
             G=self.G,
@@ -136,6 +135,12 @@ class SituationProcessor:
 
         self.Gs_prompt: dict[str, str] = Gs_str
 
+    def prompt_polish(self):
+        res = self.llms['vng_polisher'].call(passage=self.situ, vng = self.Gs_prompt)
+        res_str = find_key_in_result(res, 'VNG')['VNG']
+
+        self.Gs_prompt_polished:dict[str, str] = res_str
+
     def fit(self, size = '1024x1024', style = 'realistic', verbose=False):
         """Fit the model to the situation and trait."""
         steps = [
@@ -145,6 +150,7 @@ class SituationProcessor:
             ('Enriching graphs with cues', self.enrich_Gs_by_cues),
             ('Integrating enriched graphs', self.intergrate_enriched_Gs),
             ('Converting graphs to prompt', lambda: self.Gs2prompt(self.intergerated_Gs, size, style)),
+            ('Polishing the prompt', self.prompt_polish),
         ]
 
         if verbose:
@@ -163,6 +169,7 @@ class SituationProcessor:
             'enriched_Gs': self.enriched_Gs,
             'intergrated_Gs': self.intergerated_Gs,
             'Gs_prompt': self.Gs_prompt,
+            'Gs_prompt_polished': self.Gs_prompt_polished,
         }
 
     def _enrich_G_cues(
@@ -297,6 +304,8 @@ class SituationProcessor:
             'cues': 'self.cues' if hasattr(self, 'cues') else 'not generated',
             'enriched_cues': 'self.enriched_Gs' if hasattr(self, 'enriched_Gs') else 'not generated',
             'intergrated_Gs': 'self.intergerated_Gs' if hasattr(self, 'intergerated_Gs') else 'not generated',
+            'Gs_prompt': 'self.Gs_prompt' if hasattr(self, 'Gs_prompt') else 'not generated',
+            'Gs_prompt_polished': 'self.Gs_prompt_polished' if hasattr(self, 'Gs_prompt_polished') else 'not generated',
         }
 
         df = pd.DataFrame(pipline.items(), columns=['Step', 'Result'])

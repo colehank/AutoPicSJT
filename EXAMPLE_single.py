@@ -33,9 +33,3 @@ fig_intergarted_Gs = src.draw_Gs(P.intergerated_Gs)
 fig_G.savefig(f'{fig_dir}/G_{trait}_{itemID}.tif', dpi=300, bbox_inches='tight')
 fig_Gs.savefig(f'{fig_dir}/Gs_{trait}_{itemID}.tif', dpi=300, bbox_inches='tight')
 fig_intergarted_Gs.savefig(f'{fig_dir}/GsEnriched_{trait}_{itemID}.tif', dpi=300, bbox_inches='tight')
-#%%
-src.dic_G(P.intergerated_Gs['P'])
-# %%
-import pickle
-with open('testP.pkl', 'wb') as f:
-    pickle.dump(res, f)
