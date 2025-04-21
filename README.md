@@ -1,6 +1,10 @@
 # Auto Pictorial Situation Judgement Tests Generation
 
 Auto PicSJT is a tool for automatically generating image-based Situation Judgement Tests (SJTs), specifically developed for BIGFIVE personality trait assessment.
+## Workflow
+![Pipeline Diagram](assets/pipeline.png)
+
+*Workflow diagram showing the automated process of PicSJT generation from situation text to final visual output*
 
 ## Project Overview
 
@@ -54,14 +58,7 @@ The main components of the project include:
   - `prompts/`: Prompt templates
   - `utils/`: Utility functions
   - `viz/`: Visualization tools
-- `psychometrics/`: Psychometric tools
 - `sta/`: Statistical analysis tools
-- `results/`: Result storage directory
-  - `event_graph/`: Event graphs
-  - `final/`: Final results
-  - `situ_character/`: Situation and character data
-  - `trait_cues/`: Trait cues
-  - `vng_graph/`: Visual narrative graphs
 
 ## Main Process
 
