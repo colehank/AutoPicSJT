@@ -103,7 +103,7 @@ def identify_cue_type(cue):
 
 def find_key_in_result(result: dict, target_key: str) -> dict:
     """
-    在嵌套字典中查找特定键
+    在嵌套字典中查找特定键（不区分大小写）
 
     参数:
         result: 嵌套字典
@@ -114,15 +114,23 @@ def find_key_in_result(result: dict, target_key: str) -> dict:
     """
     current_dict = result
     while True:
-        if target_key not in current_dict:
-            lower_target_key = target_key.lower()
-            if lower_target_key in current_dict:
-                return {target_key: current_dict[lower_target_key]}
-            if not any(isinstance(v, dict) for v in current_dict.values()):
-                raise ValueError(f'无法找到{target_key}键, 原始输出: {result}')
-            current_dict = next(v for v in current_dict.values() if isinstance(v, dict))
-        else:
+        # Check for exact match
+        if target_key in current_dict:
             return {target_key: current_dict[target_key]}
+
+        # Check for case-insensitive match
+        lower_target_key = target_key.lower()
+        keys_lower = {k.lower(): k for k in current_dict.keys()}
+        if lower_target_key in keys_lower:
+            original_key = keys_lower[lower_target_key]
+            return {target_key: current_dict[original_key]}
+
+        # Check if we can go deeper
+        dict_values = [v for v in current_dict.values() if isinstance(v, dict)]
+        if not dict_values:
+            raise ValueError(f'无法找到{target_key}键, 原始输出: {result}')
+
+        current_dict = dict_values[0]
 
 def _replace_pronouns(text, name='Ye'):
         """Replace the pronouns in the text and you can choose to extract the sentences"""
