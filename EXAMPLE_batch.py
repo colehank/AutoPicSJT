@@ -75,7 +75,6 @@ for trait, items in tqdm(all_results.items(), desc='Processing traits'):
             pickle.dump(res, f)
 
         for re in res:
-            if re in ['cues', 'enriched_cues', 'Gs_prompt']:
+            if re in ['cues', 'enriched_cues', 'Gs_prompt', 'Gs_prompt_polished']:
                 with open(f'{data_dir}/{trait[0]}_{item_id}_{re}.json', 'w') as f:
                     json.dump(res[re], f, indent=4)
-#%%

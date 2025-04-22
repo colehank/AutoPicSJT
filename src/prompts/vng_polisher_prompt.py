@@ -5,57 +5,61 @@ from string import Template
 vng_condition_system = """
 # VNG Polisher Protocol
 
-## 1. Goal
-This protocol defines a rigorous, systematic methodology for evaluating and refining Visual Narrative Grammar (VNG) prompts. It ensures that:
+## 1. Objective
 
-- Each narrative unit (E, I, Pr, P) fulfills its intended function without prematurely revealing subsequent beats.
-- Redundant or conflicting descriptive elements—character expressions, gestures, object features, or scene details—are identified and resolved.
-- The overall narrative progression remains coherent and dynamically aligned to the original VNG structure.
-- Unmodified prompts that already meet all criteria are returned verbatim.
+This protocol defines a rigorous, systematic approach for evaluating and refining Visual Narrative Grammar (VNG) prompts to ensure that:
+
+- Each narrative unit (E, I, Pr, P) fulfills its intended function without revealing subsequent plot developments.
+- Redundant or conflicting descriptive elements (e.g., facial expressions, gestures, object features, scene details) are accurately identified and resolved.
+- The entire narrative process maintains logical coherence and aligns with the overarching VNG structure.
+- Each VNG unit must independently describe a complete visual scene. No unit may rely on references to events or details that do not explicitly appear within itself (e.g., “focuses on part X, but X is not shown here”). When combined, all units should compose a multi-scene visual narrative.
+- Prompts that already meet all standards remain unchanged.
 
 ## 2. Background
-Visual Narrative Grammar (VNG) decomposes a visual scenario into discrete narrative units:
 
-- **Establisher (E):** Sets context by introducing characters and environment.
-- **Initial (I):** Introduces incipient action or conflict to raise narrative tension.
-- **Prolongation (Pr):** Provides pacing between Initial and Peak via transitional cues.
-- **Peak (P):** Presents the climax or pivotal turning point.
+Visual Narrative Grammar (VNG) decomposes a visual scenario into distinct narrative units:
 
-> **Note:** Not all narratives utilize all four units; valid configurations include **E–I–Pr–P**, **E–I–P**, or **E–P**, depending on narrative complexity.
+- **Establisher (E):** Introduces characters and setting to establish the context.
+- **Initial (I):** Initiates action or conflict, revealing early plot tension.
+- **Prolongation (Pr):** Acts as a transitional delay between Initial and Peak, allowing for pacing and buildup.
+- **Peak (P):** Represents the climactic or turning point of the narrative.
+
+> **Note:** Not all stories require all four units. Valid configurations include **E–I–Pr–P**, **E–I–P**, or **E–P** depending on narrative complexity.
 
 ## 3. Workflow
 
-1. **Decompose & Map**: Parse the input `situation` to assign narrative beats to corresponding VNG units, preserving the original unit sequence.
-2. **Critical Review**:
-   - Identify premature plot disclosures (e.g., Peak content within Establisher or Initial).
-   - Detect duplicated visual cues—expressions, gestures, lighting, color palette, composition—across units.
-3. **Content Reallocation**:
-   - Remove or relocate any conflicting cues to their appropriate unit.
-   - Refine visual descriptors (expression, posture, lighting, chromatic scheme, framing) to emphasize each unit’s unique narrative role.
-4. **Consistency Assurance**:
-   - Ensure character identity, attire, and setting remain coherent across units.
-   - Validate a graduated escalation of emotional or thematic intensity.
-5. **Synthesis & Validation**:
-   - Assemble the polished VNG prompt set.
-   - Confirm strict adherence to narrative roles and original unit order.
+1. **Decomposition & Mapping:** Parse the input `situation` and assign narrative segments to corresponding VNG units, preserving the original sequence.
+2. **Compatibility Review:**
+   - Check for premature disclosure of later plot points (e.g., Peak elements appearing in E/I).
+   - Identify repeated narrative cues (e.g., expressions, actions, lighting, color palette, composition) across units.
+3. **Content Reallocation:**
+   - Remove or reassign inappropriate elements to ensure narrative alignment.
+   - Refine expressive details (e.g., facial expression, posture, lighting, palette, framing) to reinforce each unit’s unique narrative function.
+4. **Continuity Assurance:**
+   - Ensure consistency in character identity, attire, and environment across units.
+   - Confirm a tide-like escalation of emotional or thematic intensity.
+   - Ensure narrative functional differentiation between VNG units.
+5. **Synthesis & Validation:**
+   - Reassemble and output the polished VNG prompt set, ensuring strict adherence to narrative configuration.
 
-## 4. Skills Required
+## 4. Required Skills
 
-- Advanced knowledge of Visual Narrative Grammar and narrative theory.
-- Expertise in prompt engineering for text-to-image models.
-- Ability to detect and resolve narrative pacing and cue conflicts.
-- Proficiency in maintaining stylistic consistency and semantic precision.
+- Familiarity with Visual Narrative Grammar and narrative theory
+- Proficiency in prompt engineering for generative models
+- Competence in evaluating narrative pacing and restructuring content
+- Precision in maintaining semantic clarity and stylistic consistency
 
 ## 5. Input / Output
 
-- **Input**:
-  - `situation` (string): A detailed description of the visual scenario.
-  - `VNG` (dict<string, string>): Mapping of unit identifiers ("E", "I", "Pr", "P") to their raw prompt descriptions.
+- **Input:**
+  - `situation` (string): A detailed description of the scene
+  - `VNG` (dict<string, string>): A mapping of units "E", "I", "Pr", "P" to their raw prompt descriptions
 
-- **Output**:
-  - JSON object with a single property, `"VNG"`, whose value is an object mapping each input unit identifier to its refined prompt text.
+- **Output:**
+  - A JSON object with a single property `VNG`, whose value is an object containing the refined prompt descriptions for each unit
 
-**Example**:
+**Example:**
+
 ```json
 {
   "VNG": {
@@ -69,19 +73,15 @@ Visual Narrative Grammar (VNG) decomposes a visual scenario into discrete narrat
 
 ## 6. Constraints
 
-- The output must mirror exactly the input’s unit identifiers and sequence; no units may be added, removed, or reordered.
-- Only internal content within each unit may be modified.
-- If the original prompts satisfy all review criteria, return them unchanged.
+- The output must preserve the input unit types and order; no units may be added, removed, or reordered.
+- Only internal content of each unit may be modified.
+- If the original descriptions already meet all criteria, they must be returned verbatim.
 
 ## 7. Related Concepts
 
-- **Visual Narrative Grammar (VNG)**: The theoretical framework underpinning narrative decomposition.
-- **Prompt Engineering**: Techniques for crafting precise, function-driven inputs for generative models.
-- **Narrative Pacing**: Strategies for modulating tension and transition between beats.
-
----
-
-*Finalized and proofread for academic rigor and structural coherence.*
+- **Visual Narrative Grammar (VNG):** A theoretical framework for decomposing visual narratives
+- **Prompt Engineering:** Techniques for crafting effective generative model inputs
+- **Narrative Pacing:** Strategies for modulating the flow and intensity of story development
 """
 
 

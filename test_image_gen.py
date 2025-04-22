@@ -1,57 +1,65 @@
 # %%
 from __future__ import annotations
 
-import base64
 import os
+import os.path as op
 
-import requests
-from dotenv import load_dotenv
-load_dotenv()
+from PIL import Image
+from PIL import ImageOps
 
+def make_sequence(image_list, border_width=10, border_color='white'):
+    """
+    Concatenate images horizontally.
 
-def encode_image(image_path):
-    with open(image_path, 'rb') as image_file:
-        encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
-    return encoded_string
+    Parameters:
+    -----------
+    image_list: list
+        A list of images to concatenate.
+    border_width: int
+        The width of the border.
+    border_color: str
+        The color of the border.
 
-name = 'https://www.dmxapi.cn/'
-API_URL = name + 'v1/chat/completions'
-API_KEY = os.getenv('LLM_API')
-# %%
-image_path = '/Users/zgh/Desktop/P-SJT/毕设/AutoPicSJT/ref_character/female_Ye_enhanced.png'  # <--------------------------------------------- 本地图片路径
-base64_image = encode_image(image_path)
-# %%
-payload = {
-    'model': 'o4-mini',
-    'messages': [
-        {
-            'role': 'system',
-            'content': [
-                {
-                    'type': 'text',
-                    'text': "The upload image is Ye. User will ask you to generate image later. When the image generation prompt contains 'Ye', you should generate an image based on this character's visual feature as Ye's reference.",
-                },
-                {
-                    'type': 'image_url',
-                    'image_url': {'url': f'data:image/png;base64,{base64_image}'},
-                },
-            ],
-        },
-        {
-            'role': 'user',
-            'content': [
-                {'type': 'text', 'text': "Create a 1024x1024 realistic image of Ye on a tram with a friend, scene's description: The tram is moderately crowded, with people sitting and standing, ambient light filtering through the windows casting soft shadows, colors are muted with cool blues and grays, creating a calm atmosphere typical of a daily commute, Ye and his friend are casually engaged in conversation, the friend sitting next to Ye, as both appear relaxed and at ease."},
-            ],
-        },
-    ],
-    'user': 'DMXAPI',
-}
+    Returns:
+    --------
+    new_im: Image
+        The concatenated image.
+    """
+    bordered_images = [
+        ImageOps.expand(im, border=border_width, fill=border_color) for im in image_list
+    ]
 
-headers = {
-    'Content-Type': 'application/json',
-    'Authorization': f'Bearer {API_KEY}',
-    'User-Agent': f'DMXAPI/1.0.0 ({name})',
-}
+    total_width = sum(im.width for im in bordered_images)
+    max_height = max(im.height for im in bordered_images)
 
-response = requests.post(API_URL, headers=headers, json=payload)
+    new_im = Image.new('RGBA', (total_width, max_height), border_color)
+
+    x_offset = 0
+    for im in bordered_images:
+        new_im.paste(im, (x_offset, 0))
+        x_offset += im.width
+
+    return new_im
+
+def load_vng_pics(trait, itemID, res_dir):
+    des_dir = f'{res_dir}/{trait}/{trait}_{itemID}'
+    fs = os.listdir(des_dir)
+    pics = [i for i in fs if i.endswith('.png')]
+    vng_order = ['E', 'I', 'Pr', 'P']
+    vng_pics = {}
+    for vng_type in vng_order:
+        for pic in pics:
+            if pic.startswith(vng_type + '.'):
+                vng_pics[vng_type] = Image.open(op.join(des_dir, pic))
+                break
+
+    return vng_pics
 #%%
+pcs = load_vng_pics('N', '1', 'results/final/output')
+cms = make_sequence(list(pcs.values()))
+cms
+#%%
+for i in range(21):
+    pcs = load_vng_pics('N', str(i), 'results/final/output')
+    cms = make_sequence(list(pcs.values()))
+    cms.save(f'vngs/N_{i}.png')
