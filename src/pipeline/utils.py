@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+import re
 def extract_edges_from_cue(cue):
     content = cue['content']
     cue_type = cue['type']
@@ -132,19 +134,20 @@ def find_key_in_result(result: dict, target_key: str) -> dict:
 
         current_dict = dict_values[0]
 
-def _replace_pronouns(text, name='Ye'):
-        """Replace the pronouns in the text and you can choose to extract the sentences"""
-        text = (
-            text
-                .replace(f'your', f"{name}'s")
-                .replace(f'Your', f"{name}'s")
-                .replace(f'you', f'{name}')
-                .replace(f'You', f'{name}')
-                .replace(f'are', 'is')
-                .replace(f'Are', 'Is')
-                .replace(f"'re", f' is')
-                .replace(f"'re", f' is')
-        )
-        if not text.endswith('.'):
-            text = text + '.'
-        return text
+def _replace_pronouns(text: str, name: str = 'Ye') -> str:
+    """Replace second-person pronouns with the provided name."""
+
+    patterns = {
+        r'\b[Yy]our\b': f"{name}'s",
+        r"\b[Yy]ou're\b": f'{name} is',
+        r'\b[Yy]ou\b': name,
+        r'\b[Aa]re\b': 'is',
+    }
+
+    for pattern, replacement in patterns.items():
+        text = re.sub(pattern, replacement, text)
+
+    if not text.endswith('.'):  # keep punctuation consistent
+        text += '.'
+
+    return text
