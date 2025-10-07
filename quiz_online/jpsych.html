@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>jsPsych 问卷调研试验示例</title>
+  <!-- jsPsych core & theme -->
+  <script src="https://unpkg.com/jspsych@7.3.4/dist/jspsych.js"></script>
+  <link href="https://unpkg.com/jspsych@7.3.4/dist/css/jspsych.css" rel="stylesheet" />
+  <!-- Common plugins -->
+  <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.2.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-image-button-response@1.2.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-video-button-response@1.2.0"></script>
+  <script src="https://unpkg.com/@jspsych/plugin-survey-likert@1.2.0"></script>
+
+  <style>
+    .jspsych-content { max-width: 900px; }
+    .stim-text { font-size: 20px; line-height: 1.6; text-align: left; }
+    .media-stim { max-height: 60vh; }
+    .muted-note { color:#666; font-size: 13px; margin-top: 6px; }
+    .topbar { position: fixed; left:0; right:0; top:0; background: #0f172a; color:#fff; padding:10px 16px; z-index:1000; display:flex; align-items:center; justify-content:space-between; }
+    .topbar b { font-weight:600; }
+    body { padding-top: 52px; background:#f8fafc; }
+    .footer { text-align:center; color:#6b7280; font-size:12px; margin:18px 0; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <b>问卷调研试验</b>
+    <span id="progress">加载中…</span>
+  </div>
+
+  <div id="jspsych-target"></div>
+
+  <script>
+    // ======== 工具函数 ========
+    const isMediaPath = (s) => typeof s === 'string' && /\.(png|jpe?g|gif|webp|mp4|mov|webm|m4v)$/i.test(s);
+    const isImage = (s) => typeof s === 'string' && /\.(png|jpe?g|gif|webp)$/i.test(s);
+    const isVideo = (s) => typeof s === 'string' && /\.(mp4|mov|webm|m4v)$/i.test(s);
+
+    // 统一把 options 转成数组，同时保留原键（如 A/B/C 或 1/2/3）
+    function normalizeOptions(options) {
+      if (!options) return [];
+      // 数组直接返回；对象则按键名排序（A->D 或 1->5）
+      if (Array.isArray(options)) {
+        return options.map((v, i) => ({ key: String(i+1), label: String(v) }));
+      }
+      if (typeof options === 'object') {
+        const keys = Object.keys(options).sort((a,b) => {
+          // 尝试数字排序，否则字母排序
+          const na = Number(a), nb = Number(b);
+          const aNum = !Number.isNaN(na), bNum = !Number.isNaN(nb);
+          if (aNum && bNum) return na - nb; 
+          return a.localeCompare(b, 'zh-Hans-CN');
+        });
+        return keys.map(k => ({ key: k, label: String(options[k]) }));
+      }
+      return [];
+    }
+
+    // 生成单题 trial（单选 or N 点量表）
+    function buildTrial(idx, item) {
+      // 两种数据形态：{ situation, options } 或 { description, options }
+      const promptKey = 'situation' in item ? 'situation' : ('description' in item ? 'description' : null);
+      const prompt = promptKey ? item[promptKey] : '';
+      const opts = normalizeOptions(item.options);
+      const nPointsLikert = (promptKey === 'description'); // 规则：有 description + options => N 点记分量表
+
+      // 元数据
+      const commonData = {
+        idx,
+        prompt_key: promptKey,
+      };
+
+      // —— 量表题（survey-likert） ——
+      if (nPointsLikert) {
+        // 将媒体（若有）内嵌到题干 HTML 中
+        let qPromptHTML = '';
+        if (isMediaPath(prompt)) {
+          if (isImage(prompt)) {
+            qPromptHTML = `<div style="margin-bottom:12px;text-align:center"><img class="media-stim" src="${prompt}" alt="stimulus"/></div>`;
+          } else if (isVideo(prompt)) {
+            qPromptHTML = `<div style="margin-bottom:12px"><video class="media-stim" src="${prompt}" controls playsinline></video></div>`;
+          }
+        } else {
+          qPromptHTML = `<div class="stim-text">${prompt}</div>`;
+        }
+
+        const labels = opts.length ? opts.map(o => o.label) : ['1','2','3','4','5'];
+
+        return {
+          type: jsPsychSurveyLikert,
+          preamble: qPromptHTML,
+          questions: [
+            {
+              prompt: '',
+              labels: labels,
+              required: true,
+            }
+          ],
+          data: { ...commonData, kind: 'likert', options: labels },
+          on_finish: (data) => {
+            // survey-likert 将答案存在 data.response 中，形如 {Q0: 0..N-1}
+            const resp = JSON.parse(data.responses || data.response || '{}');
+            const i = resp.Q0 ?? resp.q0 ?? null;
+            data.selected_index = i;
+            data.selected_label = (i != null && i < labels.length) ? labels[i] : null;
+          }
+        };
+      }
+
+      // —— 单选题（按钮） ——
+      const choices = opts.length ? opts.map(o => o.label) : ['A','B','C','D'];
+
+      if (isImage(prompt)) {
+        return {
+          type: jsPsychImageButtonResponse,
+          stimulus: prompt,
+          stimulus_height: null,
+          stimulus_width: null,
+          maintain_aspect_ratio: true,
+          choices,
+          prompt: '<div class="muted-note">请选择一个选项后点击下一题。</div>',
+          data: { ...commonData, kind: 'image-single', options: choices, option_keys: opts.map(o=>o.key) },
+          on_finish: (data) => {
+            const choiceIndex = data.response; // 按钮序号
+            data.selected_index = choiceIndex;
+            data.selected_key = opts[choiceIndex]?.key ?? null;
+            data.selected_label = opts[choiceIndex]?.label ?? null;
+          }
+        };
+      }
+
+      if (isVideo(prompt)) {
+        return {
+          type: jsPsychVideoButtonResponse,
+          stimulus: [prompt],
+          width: null,
+          autoplay: false,
+          controls: true,
+          choices,
+          prompt: '<div class="muted-note">请选择一个选项后点击下一题。</div>',
+          data: { ...commonData, kind: 'video-single', options: choices, option_keys: opts.map(o=>o.key) },
+          on_finish: (data) => {
+            const choiceIndex = data.response;
+            data.selected_index = choiceIndex;
+            data.selected_key = opts[choiceIndex]?.key ?? null;
+            data.selected_label = opts[choiceIndex]?.label ?? null;
+          }
+        };
+      }
+
+      // 纯文本题干
+      return {
+        type: jsPsychHtmlButtonResponse,
+        stimulus: `<div class="stim-text">${prompt}</div>`,
+        choices,
+        data: { ...commonData, kind: 'text-single', options: choices, option_keys: opts.map(o=>o.key) },
+        on_finish: (data) => {
+          const choiceIndex = data.response;
+          data.selected_index = choiceIndex;
+          data.selected_key = opts[choiceIndex]?.key ?? null;
+          data.selected_label = opts[choiceIndex]?.label ?? null;
+        }
+      };
+    }
+
+    // ======== 主流程 ========
+    const jsPsych = initJsPsych({
+      display_element: 'jspsych-target',
+      on_trial_start: function(){
+        const t = jsPsych.timelineProgress();
+        const pct = ((t.current_trial_global + 1) / t.total_trials * 100) || 0;
+        document.getElementById('progress').textContent = `进度：${Math.round(pct)}%`;
+      },
+      on_finish: function(){
+        document.getElementById('progress').textContent = '完成';
+      }
+    });
+
+    // 欢迎页
+    const welcome = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: `<h2>欢迎参加问卷</h2><p>请根据指引完成每一道题目，然后点击按钮进入下一题。</p>`,
+      choices: ['开始'],
+      data: { kind: 'welcome' }
+    };
+
+    // 结束页 + 下载数据
+    const endScreen = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: `<h2>感谢完成！</h2><p>点击下方按钮下载本次作答数据。</p>`,
+      choices: ['下载 CSV', '下载 JSON', '结束'],
+      on_finish: (data) => {
+        const i = data.response;
+        if (i === 0) jsPsych.data.get().localSave('csv', 'results.csv');
+        if (i === 1) jsPsych.data.get().localSave('json', 'results.json');
+      },
+      data: { kind: 'end' }
+    };
+
+    // 从 data.json 读取题库并构建时间线
+    async function startExperiment() {
+      try {
+        const res = await fetch('data.json', { cache: 'no-store' });
+        if (!res.ok) throw new Error('无法加载 data.json');
+        const raw = await res.json();
+
+        // data.json 结构示例：{"1": {"situation":"...","options":{"A":"...","B":"..."}}, "2": {"description":"...","options":["1","2","3"]}}
+        const entries = Object.entries(raw)
+          .sort((a,b) => Number(a[0]) - Number(b[0]));
+
+        // 预加载媒体
+        const images = [];
+        const videos = [];
+        for (const [, item] of entries) {
+          const promptKey = 'situation' in item ? 'situation' : ('description' in item ? 'description' : null);
+          const stim = promptKey ? item[promptKey] : '';
+          if (isImage(stim)) images.push(stim);
+          if (isVideo(stim)) videos.push(stim);
+        }
+        if (images.length) await jsPsych.pluginAPI.preloadImages(images);
+        // video 无需强制预加载；由浏览器/插件处理
+
+        const timeline = [welcome];
+        for (const [idx, item] of entries) {
+          timeline.push(buildTrial(idx, item));
+        }
+        timeline.push(endScreen);
+
+        await jsPsych.run(timeline);
+      } catch (e) {
+        console.error(e);
+        document.getElementById('jspsych-target').innerHTML = `<p style="color:#b91c1c">加载失败：${e.message}</p><p>请确认 <code>data.json</code> 与本页面处于同一目录，且 JSON 格式正确。</p>`;
+      }
+    }
+
+    startExperiment();
+  </script>
+
+  <div class="footer">© 示例页面 | jsPsych 7</div>
+
+  <!--
+  ========================
+  示例 data.json（请单独保存为 data.json）
+  {
+    "1": {
+      "situation": "请阅读题干文字并选择一个答案。",
+      "options": {"A":"非常不同意","B":"不同意","C":"一般","D":"同意"}
+    },
+    "2": {
+      "situation": "stimuli/sample.png",
+      "options": {"A":"猫","B":"狗","C":"鸟","D":"鱼"}
+    },
+    "3": {
+      "situation": "stimuli/sample.mp4",
+      "options": {"A":"选项一","B":"选项二","C":"选项三","D":"选项四"}
+    },
+    "4": {
+      "description": "请根据下图打分",
+      "options": ["1","2","3","4","5"]
+    },
+    "5": {
+      "description": "stimuli/another.png",
+      "options": ["非常差","较差","一般","较好","非常好"]
+    }
+  }
+  ========================
+  -->
+</body>
+</html>

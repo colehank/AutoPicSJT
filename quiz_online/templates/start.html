@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>图像情景判断测验</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #10131a;
+      --fg: #e9ecf5;
+      --muted: #abb1c4;
+      --card: #191d26;
+      --border: #242a37;
+      --accent: #5fa8ff;
+      --error: #ff6b6b;
+      --warning: #ffd166;
+      --info: #64c0ff;
+      --success: #7bd88f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.45;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 36px 24px;
+      display: grid;
+      gap: 22px;
+    }
+    header h1 {
+      margin: 0 0 6px;
+      font-size: 32px;
+    }
+    header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    form {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      display: grid;
+      gap: 16px;
+    }
+    label {
+      display: grid;
+      gap: 6px;
+      font-size: 15px;
+    }
+    label span {
+      color: var(--muted);
+    }
+    input[type="text"],
+    input[type="file"] {
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      color: var(--fg);
+      font-size: 16px;
+    }
+    input[type="file"] {
+      padding: 6px 0;
+    }
+    button {
+      padding: 12px 18px;
+      border-radius: 12px;
+      border: none;
+      background: var(--accent);
+      color: #07101a;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover { filter: brightness(1.08); }
+    .details {
+      margin-top: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .alerts {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 12px;
+    }
+    .alert {
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 14px;
+    }
+    .alert-success { color: var(--success); border-color: rgba(123, 216, 143, 0.45); }
+    .alert-warning { color: var(--warning); border-color: rgba(255, 209, 102, 0.45); }
+    .alert-error { color: var(--error); border-color: rgba(255, 107, 107, 0.45); }
+    .alert-info { color: var(--info); border-color: rgba(100, 192, 255, 0.45); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>图像情景判断测验</h1>
+      <p>请输入您的参与者ID，可选上传自定义题目数据集。</p>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="alerts">
+          {% for category, message in messages %}
+            <li class="alert alert-{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="post" enctype="multipart/form-data">
+      <label>
+        <span>参与者ID *</span>
+        <input type="text" name="user_id" required placeholder="例如：P001">
+      </label>
+
+      <label>
+        <span>上传JSON数据集（可选）</span>
+        <input type="file" name="data_file" accept="application/json">
+        {% if default_available %}
+          <div class="details">若不上传，将使用默认的 outputs/all_data.json。</div>
+        {% else %}
+          <div class="details">当前目录下未找到默认数据文件，请上传JSON。</div>
+        {% endif %}
+      </label>
+
+      <button type="submit">开始测验</button>
+    </form>
+  </div>
+</body>
+</html>

@@ -1,0 +1,173 @@
+{
+  "N4_2": {
+    "situation": "/Users/zgh/Desktop/workingdir/PicSJTAgent/outputs_2/N4_2_imgs/situation_seq.png",
+    "options": {
+      "A": "I embarrassingly look to the side and avoid eye contact.",
+      "B": "I embarrassingly look to the side and later tell my friend that I found his action quite stupid.",
+      "C": "I compliment her.",
+      "D": "I laugh and point my finger at my friend."
+    }
+  },
+  "N4_13": {
+    "situation": "/Users/zgh/Desktop/workingdir/PicSJTAgent/outputs_2/N4_13_imgs/situation_seq.png",
+    "options": {
+      "A": "I'll explain to the birthday boy/girl  that I hate to give a speech.",
+      "B": "I reject the proposal directly and do not give a birthday speech, because I do not like to speak in front of so many people.",
+      "C": "I assure once again with the host and then give a short birthday speech.",
+      "D": "At the next opportunity I give a birthday speech enthusiastically."
+    }
+  },
+  "N4_3": {
+    "situation": "/Users/zgh/Desktop/workingdir/PicSJTAgent/outputs_2/N4_3_imgs/situation_seq.png",
+    "options": {
+      "A": "I think about whether I said something funny and look down at myself to see if my clothes are impeccable.",
+      "B": "I let myself be put off and have to look at my notes.",
+      "C": "I proceed with my presentation.",
+      "D": "I pause briefly to ask whether something is not clear or understandable to my colleagues."
+    }
+  },
+  "N4_8": {
+    "situation": "/Users/zgh/Desktop/workingdir/PicSJTAgent/outputs_2/N4_8_imgs/situation_seq.png",
+    "options": {
+      "A": "I openly admit that I would rather watch and leave the pantomime performance to someone else.",
+      "B": "I get over myself to take part in the first pantomime, but I only do it for the sake of my girlfriend/boyfriend.",
+      "C": "I am easily persuaded to do so, as I usually enjoy such tasks.",
+      "D": "I get up and walk towards the stage where the pantomime performance takes place."
+    }
+  },
+  "N4_19": {
+    "situation": "/Users/zgh/Desktop/workingdir/PicSJTAgent/outputs_2/N4_19_imgs/situation_seq.png",
+    "options": {
+      "A": "I leave the café and go somewhere else.",
+      "B": "I stay at the café, but take a seat on the first floor. I hope nobody there saw me slip.",
+      "C": "I laugh at myself and sit down in the café.",
+      "D": "I sit down in the café without a word."
+    }
+  },
+  "N4_4": {
+    "situation": "/Users/zgh/Desktop/workingdir/PicSJTAgent/outputs_2/N4_4_imgs/situation_seq.png",
+    "options": {
+      "A": "I reject the proposal because I am a little uncomfortable with the whole thing.",
+      "B": "I reject the proposal and ask my friends to refrain from such actions in the future where I am put so publicly in the spotlight.",
+      "C": "I accept the proposal and I am pleased about it.",
+      "D": "I accept the proposal and after the serenade I ask for an encore."
+    }
+  },
+  "N4_15": {
+    "situation": "/Users/zgh/Desktop/workingdir/PicSJTAgent/outputs_2/N4_15_imgs/situation_seq.png",
+    "options": {
+      "A": "I feel ashamed and try to avoid the looks of the other guests.",
+      "B": "I ask my friends to be quieter, as everyone is already looking at us, which is terribly unpleasant for me.",
+      "C": "I laugh along. After all, these are funny stories.",
+      "D": "I don't care if others are looking. I listen to the stories."
+    }
+  },
+  "N4_14": {
+    "situation": "/Users/zgh/Desktop/workingdir/PicSJTAgent/outputs_2/N4_14_imgs/situation_seq.png",
+    "options": {
+      "A": "I quickly get out of the elevator, wait a short moment behind the elevator and take the next elevator to the 6th floor.",
+      "B": "I get out of the elevator quickly and take the stairs to the sixth floor.",
+      "C": "I apologize to the other passengers, stay in the elevator and press the button for the 6th floor.",
+      "D": "I say nothing at all, press the 6th floor button and keep riding the elevator."
+    }
+  },
+  "N4_5": {
+    "situation": "/Users/zgh/Desktop/workingdir/PicSJTAgent/outputs_2/N4_5_imgs/situation_seq.png",
+    "options": {
+      "A": "I turn around so my banker can't recognize me.",
+      "B": "I keep walking and pretend not to see my bank advisor.",
+      "C": "I greet him/her and jokingly ask if he liked my holiday pictures. Afterwards I enlighten him/her about the situationation.",
+      "D": "I talk to my bank advisor and explain the situationation to him/her."
+    }
+  },
+  "N4_18": {
+    "situation": "/Users/zgh/Desktop/workingdir/PicSJTAgent/outputs_2/N4_18_imgs/situation_seq.png",
+    "options": {
+      "A": "I apologize and try to leave the business dinner at the earliest opportunity.",
+      "B": "I apologize and try to change seats at the earliest opportunity.",
+      "C": "I apologize and try to make up for the situationation with a joke.",
+      "D": "I apologize and say that everyone makes mistakes."
+    }
+  },
+  "N4_9": {
+    "situation": "/Users/zgh/Desktop/workingdir/PicSJTAgent/outputs_2/N4_9_imgs/situation_seq.png",
+    "options": {
+      "A": "The situationation is terribly embarrassing for me and I switch off the phone as soon as possible.",
+      "B": "I try to switch off the mobile phone inconspicuously, even if it should ring a little longer in this case.",
+      "C": "I pick up the phone and quietly tell the caller that I can't talk to him/her at the moment.",
+      "D": "I don't care about the cell phone ringing anymore and watch the exciting film scene."
+    }
+  },
+  "N4_17": {
+    "situation": "/Users/zgh/Desktop/workingdir/PicSJTAgent/outputs_2/N4_17_imgs/situation_seq.png",
+    "options": {
+      "A": "I get off on the next floor to escape the embarrassing situationation.",
+      "B": "I feel uncomfortable with the situationation and I avoid eye contact.",
+      "C": "I am happy for the lovers.",
+      "D": "I am amused by the funny situationation."
+    }
+  },
+  "N4_6": {
+    "situation": "/Users/zgh/Desktop/workingdir/PicSJTAgent/outputs_2/N4_6_imgs/situation_seq.png",
+    "options": {
+      "A": "I am shocked and hurt by the behaviour of my supervisor and the laughter of my colleagues.",
+      "B": "I will not let myself be treated like this. I'll stay away from the next Christmas party.",
+      "C": "I laugh along and don't care about it.",
+      "D": "I imitate my supervisor and consider the whole thing a fun game."
+    }
+  },
+  "N4_7": {
+    "situation": "/Users/zgh/Desktop/workingdir/PicSJTAgent/outputs_2/N4_7_imgs/situation_seq.png",
+    "options": {
+      "A": "I briefly mumble something to myself and make a quick getaway.",
+      "B": "I am embarrassed and avoid the person the whole night.",
+      "C": "I apologize politely and clear up the misunderstanding.",
+      "D": "I smile and invite the person for a drink as an apology."
+    }
+  },
+  "N4_16": {
+    "situation": "/Users/zgh/Desktop/workingdir/PicSJTAgent/outputs_2/N4_16_imgs/situation_seq.png",
+    "options": {
+      "A": "I get off at the next stop.",
+      "B": "I get up and find another seat.",
+      "C": "I do not react at all to the man's accusations and keep riding the bus.",
+      "D": "I laugh at the comments, make a pointed remark and keep riding the bus."
+    }
+  },
+  "N4_20": {
+    "situation": "/Users/zgh/Desktop/workingdir/PicSJTAgent/outputs_2/N4_20_imgs/situation_seq.png",
+    "options": {
+      "A": "I do not say anything, but I am annoyed by the comment.",
+      "B": "I explain to everyone else that this is not true.",
+      "C": "I start to laugh and make a funny remark about this guest.",
+      "D": "I take the remark as a little gag and don't care about it."
+    }
+  },
+  "N4_11": {
+    "situation": "/Users/zgh/Desktop/workingdir/PicSJTAgent/outputs_2/N4_11_imgs/situation_seq.png",
+    "options": {
+      "A": "I say goodbye quickly and leave the place.",
+      "B": "I look away ashamed and would like to leave the place, but I do not do so.",
+      "C": "I pretend that nothing has happened and continue talking to him/her.",
+      "D": "To ease the unpleasant situationation I make a perky saying so that all people hear it."
+    }
+  },
+  "N4_1": {
+    "situation": "/Users/zgh/Desktop/workingdir/PicSJTAgent/outputs_2/N4_1_imgs/situation_seq.png",
+    "options": {
+      "A": "I don't change the cinema hall, because it's unpleasant for me if half a row has to stand up during the film.",
+      "B": "I remain seated throughout the film, because I'm embarrassed if everyone else sees that I leave during the performance.",
+      "C": "I get up and go to the other cinema hall.",
+      "D": "I watch the beginning of the film and then decide whether to change the cinema hall."
+    }
+  },
+  "N4_10": {
+    "situation": "/Users/zgh/Desktop/workingdir/PicSJTAgent/outputs_2/N4_10_imgs/situation_seq.png",
+    "options": {
+      "A": "I try to escape the spotlight as quickly as possible and withdraw into a corner.",
+      "B": "I briefly explain that there must be a mix-up with the guest of honor and quickly step out of the spotlight.",
+      "C": "I welcome the guests with a little speech.",
+      "D": "I stay in the spotlight and enjoy the attention I receive."
+    }
+  }
+}

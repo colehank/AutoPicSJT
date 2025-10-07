@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>题目 {{ question_id }}</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #10131a;
+      --fg: #e9ecf5;
+      --muted: #abb1c4;
+      --card: #191d26;
+      --border: #242a37;
+      --accent: #5fa8ff;
+      --error: #ff6b6b;
+      --warning: #ffd166;
+      --success: #7bd88f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.45;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 24px 40px;
+      display: grid;
+      gap: 24px;
+    }
+    header.page {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    header.page h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+    header.page .meta {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0;
+    }
+    .status {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      font-size: 15px;
+      color: var(--muted);
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      display: grid;
+    }
+    .media {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #080b11;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .media img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .media.missing {
+      padding: 18px;
+      color: var(--warning);
+      text-align: center;
+      gap: 8px;
+      flex-direction: column;
+    }
+    .media .path {
+      color: var(--muted);
+      font-size: 12px;
+      word-break: break-all;
+    }
+    form {
+      display: grid;
+      gap: 18px;
+      padding: 20px 22px 26px;
+    }
+    .options {
+      display: grid;
+      gap: 12px;
+    }
+    .options label {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+    .options label:hover {
+      border-color: rgba(95, 168, 255, 0.5);
+      background: rgba(95, 168, 255, 0.08);
+    }
+    .options input[type="radio"] {
+      margin-top: 3px;
+    }
+    .options .key {
+      font-weight: 600;
+      color: var(--accent);
+      min-width: 28px;
+    }
+    .options .text {
+      color: var(--fg);
+      flex: 1;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .toolbar .search {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .toolbar input[type="text"] {
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.05);
+      color: var(--fg);
+      font-size: 15px;
+      width: 160px;
+    }
+    .toolbar button {
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.08);
+      color: var(--fg);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .toolbar button:hover {
+      background: rgba(95, 168, 255, 0.16);
+    }
+    .toolbar button.primary {
+      background: var(--accent);
+      color: #07101a;
+    }
+    .toolbar button.primary:hover {
+      filter: brightness(1.06);
+    }
+    .toolbar button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .note {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .note strong {
+      color: var(--warning);
+    }
+    .alerts {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 12px;
+    }
+    .alert {
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 14px;
+    }
+    .alert-success { color: var(--success); border-color: rgba(123, 216, 143, 0.45); }
+    .alert-warning { color: var(--warning); border-color: rgba(255, 209, 102, 0.45); }
+    .alert-error { color: var(--error); border-color: rgba(255, 107, 107, 0.45); }
+    .alert-info { color: var(--accent); border-color: rgba(95, 168, 255, 0.45); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="page">
+      <div>
+        <h1>题目 {{ question_id }}</h1>
+        <p class="meta">参与者ID：{{ user_id }}</p>
+      </div>
+      <div class="status">
+        <span>进度：{{ progress }} / {{ total }}</span>
+        {% if data_origin %}
+          <span>{{ data_origin }}</span>
+        {% endif %}
+      </div>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="alerts">
+          {% for category, message in messages %}
+            <li class="alert alert-{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    {% if skipped %}
+      <p class="note"><strong>提示：</strong> 以下题目被忽略：{{ skipped | join(", ") }}</p>
+    {% endif %}
+
+    <section class="card">
+      {% if image_url %}
+        <div class="media">
+          <img src="{{ image_url }}" alt="题目 {{ question_id }} 的情景图片" loading="lazy">
+        </div>
+      {% else %}
+        <div class="media missing">
+          <span>未找到情景图像。</span>
+          {% if raw_situation %}
+            <span class="path">{{ raw_situation }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      <form method="post">
+        <input type="hidden" name="question_id" value="{{ question_id }}">
+        <div class="options">
+          {% for option in options %}
+            <label>
+              <input
+                type="radio"
+                name="selected_option"
+                value="{{ option.key }}"
+                {% if current_choice == option.key %}checked{% endif %}
+              >
+              <span class="key">{{ option.key }}.</span>
+              <span class="text">{{ option.text }}</span>
+            </label>
+          {% endfor %}
+        </div>
+
+        <div class="toolbar">
+          <div>
+            <button type="submit" name="action" value="prev" {% if not has_prev %}disabled{% endif %}>上一题</button>
+            {% if has_next %}
+              <button type="submit" class="primary" name="action" value="next">下一题</button>
+            {% else %}
+              <button type="submit" class="primary" name="action" value="finish">提交答卷</button>
+            {% endif %}
+          </div>
+          <div class="search">
+            <input type="text" name="goto_qid" placeholder="按题号跳转">
+            <button type="submit" name="action" value="goto">Go</button>
+            <a href="{{ url_for('reset') }}">重置</a>
+          </div>
+        </div>
+      </form>
+    </section>
+  </div>
+</body>
+</html>

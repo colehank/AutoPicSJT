@@ -1,0 +1,12 @@
+.claude
+outputs/
+outputs_*
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.vscode/
+.env
+.env.*
+.DS_Store
+logs/
+stat_*
